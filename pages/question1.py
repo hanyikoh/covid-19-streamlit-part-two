@@ -20,14 +20,13 @@ aefi_dir = "dataset/aefi.csv"
 def app():
     st.markdown('> Informative Insights from the Datasets')
     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
-    chosen = st.radio(
-    'Choose a Topic',
-    ["Relationships between Covid-19 Vaccination and Daily NewCases", 
+    chosen = st.selectbox(label = "Choose a Topic :", options=["Relationships between Covid-19 Vaccination and Daily NewCases", 
      "Covid-19 Daily New Cases and Daily New Deaths for each State", 
      "The admission and discharge flow in PKRC, hospital, ICUand ventilators usage situation of each state", 
      "The trend for vaccinated and cumulative vaccination reg-istration for each state",
      "The trend of R naught index value for each state",
-     "The  interest  in  COVID-19  keywords  of  each  state  fromgoogle trends data"])
+     "The  interest  in  COVID-19  keywords  of  each  state  fromgoogle trends data"] )
+
     st.markdown(f"__{chosen} :__")
     start_date = "2021-07-01"
     end_date = "2021-09-30"
@@ -71,8 +70,8 @@ def app():
         plt.xlabel('Vaccination')
         plt.ylabel('Daily New Cases')
         st.pyplot()
-        st.text('Overall, vaccination has affected the daily Covid-19 new cases and play its role in Malaysia significantly.')
-        st.text('Next, we look into each state and see the effetiveness of vaccination.')
+        st.markdown('Overall, vaccination has affected the daily Covid-19 new cases and play its role in Malaysia significantly.')
+        st.markdown('Next, we look into each state and see the effetiveness of vaccination.')
         state = ['Johor', 'Kedah', 'Kelantan', 'Melaka', 'Negeri Sembilan', 'Pahang', 'Perak', 'Perlis', 'Pulau Pinang', 'Sabah', 'Sarawak', 'Selangor', 'Terengganu', 'W.P. Kuala Lumpur', 'W.P. Labuan', 'W.P. Putrajaya']
         sns.set(rc={'figure.figsize':(8,8)})
         graph = sns.FacetGrid(df3, row ="state", row_order=state ,hue ="state",height=4, aspect=1)
@@ -80,8 +79,15 @@ def app():
         graph.map(plt.scatter, "vaccine", "cases_new", edgecolor ="w").add_legend()
         # show the object
         st.pyplot()
-        st.text('In conclusion, the states daily new cases that has been affected a lot by vac-cination are Johor, Kedah, Pulau Penang, Sabah, Selangor and W.P. KualaLumpur.  The states mentioned are having strong correlation between vac-cination and daily new cases for each state from July until September.  This is probably related to the population density and the r-naught value of thestates mentioned above.')
-
+        st.markdown('In conclusion, the states daily new cases that has been affected a lot by vaccination are Johor, Kedah, Pulau Penang, Sabah, Selangor and W.P. Kuala Lumpur, the states is having a very obvious quick drop after certain point.  The states mentioned are having strong non-linear correlation between vaccination and daily new cases for each state from July until September.  This is probably related to the population density and the r-naught value of the states mentioned above.')
+        affective_state = ['Johor', 'Kedah', 'Pulau Pinang', 'Sabah', 'Selangor', 'W.P. Kuala Lumpur']
+        sns.set(rc={'figure.figsize':(8,8)})
+        graph = sns.FacetGrid(df3, col ="state", col_order=affective_state ,hue ="state",height=4, aspect=1)
+        # map the above form facetgrid with some attributes
+        graph.map(plt.scatter, "vaccine", "cases_new", edgecolor ="w").add_legend()
+        # show the object
+        plt.show()
+        st.pyplot()
     elif chosen == "Covid-19 Daily New Cases and Daily New Deaths for each State":
         clusters_df = pd.read_csv(clusters_dir)
         after_start_date = clusters_df["date_announced"] >= start_date
