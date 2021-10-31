@@ -128,6 +128,7 @@ def app():
         start_date = "2021-07-01"
         end_date = "2021-09-30"
         labels = ['Low','Medium','High']
+
         r_naught_df = pd.read_csv(r_naught_dir)
         r_naught_df['date'] = pd.to_datetime(r_naught_df['date'], format='%d/%m/%Y')
         # r_naught_df.drop(columns=['Date'], inplace=True)
@@ -135,24 +136,33 @@ def app():
         before_end_date = r_naught_df["date"] <= end_date
         between_two_dates = after_start_date & before_end_date
         r_naught_df = r_naught_df.loc[between_two_dates]
-        #r_naught_df.set_index('date', inplace=True)
-        r_naught_df['Malaysia_Category'] = (
-        pd.cut(
-                r_naught_df['Malaysia'].values, bins=getBinsRange(r_naught_df),labels=labels, include_lowest=True)
+        r_naught_df.head()
+        
+        r_naught_df_copy = r_naught_df.copy()
+
+        r_naught_df_copy['Malaysia_Category'] = (
+            pd.cut(
+                r_naught_df_copy['Malaysia'].values, bins=getBinsRange(r_naught_df_copy),labels=labels, include_lowest=True)
         )
-        r_naught_df = r_naught_df._convert(numeric=True)
-        r_naught_df = r_naught_df.replace(np.nan,0)
-        X = r_naught_df.drop(['Malaysia','Malaysia_Category'], axis=1)  #predict newcases
-        y = r_naught_df['Malaysia_Category']  
+        r_naught_df_copy = r_naught_df_copy._convert(numeric=True)
+        r_naught_df_copy = r_naught_df_copy.replace(np.nan,0)
+        r_naught_df_copy.set_index('date', inplace=True)
+        X = r_naught_df_copy.drop(['Malaysia','Malaysia_Category'], axis=1)  #predict newcases
+        y = r_naught_df_copy['Malaysia_Category']
+        
         sm = SMOTE(random_state=42)
 
         X_sm, y_sm = sm.fit_resample(X, y)
-        y_sm = pd.DataFrame(y_sm)
-        y_sm.value_counts(normalize=True) * 100
         X_train, X_test, y_train, y_test = train_test_split(X_sm, y_sm, test_size=0.3, random_state=1)
         clf = DecisionTreeClassifier(criterion="entropy", max_depth=5, splitter='random') #pruning the tree by setting the depth
         clf = clf.fit(X_train,y_train)
         y_pred = clf.predict(X_test)
+        result = pd.DataFrame()
+        result = pd.DataFrame(X_test)
+        result['y_test'] = y_test.ravel()
+        result['y_pred'] = y_pred
+        table = result.head()
+        st.table(table)
         cm = confusion_matrix(y_test, y_pred)
         plt.figure(figsize=(8, 6))
         plt.title('Confusion Matrix (with SMOTE)', size=16)
