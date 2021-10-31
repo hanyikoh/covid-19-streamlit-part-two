@@ -119,8 +119,8 @@ def getBinsRange(df):
 
 
 def app():
-    st.markdown('> Comparing regression and classification models, what model performs well in predicting the daily cases for Pahang, Kedah, Johor, and Selangor?')
-    state_choice = st.selectbox( label = "Choose a State :", options=['Johor','Kedah','Pahang','Selangor','All 4 states'] )
+    st.markdown('> What is the cumulative vaccinated & cumulative vaccination registration trend for each state')
+    state_choice = st.selectbox( label = "Choose a State :", options=['Johor','Kedah','Pahang','Selgor','All 4 states'] )
     model_choice = st.selectbox( label = "Choose regressor or classifier :", options=['Regressor','Classifier'] )
     features = {'Features used': ['hosp_covid_hospital','rtk-ag','cases_recovered','pcr','Checkins number','cases_new']}
     

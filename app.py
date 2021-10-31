@@ -8,7 +8,7 @@ from PIL import Image
 # from pandas_profiling import ProfileReport
 # from streamlit_pandas_profiling import st_profile_report
 from multipage import MultiPage
-from pages import question1,question2,question3,question4
+from pages import question1,question2,question3,question4,newq4
 
 # Create an instance of the app 
 app = MultiPage()
@@ -67,4 +67,4 @@ elif question_num == "Classification":
     question3.app()
 
 elif question_num == "Regression":
-    question4.app()
+    newq4.app()
