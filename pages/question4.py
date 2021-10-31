@@ -1,154 +1,170 @@
-import numpy as np
 import pandas as pd
 import streamlit as st
 import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
+import numpy as np
 from sklearn.linear_model import LinearRegression
-from sklearn.tree import DecisionTreeClassifier 
-from sklearn.naive_bayes import GaussianNB
+# Import train_test_split functionn
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import r2_score, median_absolute_error, mean_squared_error, mean_absolute_error
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
+from sklearn import model_selection
+from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.svm import SVR
+from sklearn.linear_model import Lasso
+from sklearn.preprocessing import MinMaxScaler
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import Dropout
 
-from sklearn.metrics import roc_curve
-from sklearn.metrics import roc_auc_score
-from sklearn.metrics import precision_recall_curve
+r_naught_df = pd.read_csv("dataset/r-naught-value - All.csv")
+malaysia_case_df = pd.read_csv('dataset/cases_malaysia.csv')
+malaysia_death_df = pd.read_csv('dataset/deaths_malaysia.csv')
 
-df_final = pd.read_csv("dataset/cleaned_data.csv")
-df_final = df_final[['Unnamed: 0', 'Unnamed: 1','hosp_covid_hospital','rtk-ag','cases_recovered','pcr','Checkins number','cases_new']]
-df_final.rename(columns = {'Unnamed: 0': 'date', 'Unnamed: 1': 'state'}, inplace=True)
-rslt_df_ph = df_final[df_final['state'] == "Pahang"]
-rslt_df_kd = df_final[df_final['state'] == "Kedah"]
-rslt_df_jh = df_final[df_final['state'] == "Johor"]
-rslt_df_sl = df_final[df_final['state'] == "Selangor"]
+r_naught_df = r_naught_df._convert(numeric=True)
+r_naught_df = r_naught_df.replace(np.nan, 0)
+r_naught_df.set_index('date', inplace=True)
+X = r_naught_df.drop(['Malaysia'], axis=1)  # predict newcases
+y = r_naught_df['Malaysia']
+# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 2)
 
-def confusion_report(y_test, y_pred):
-    # Confusion matrix report
+def model_evaluation(model, X, y):
+    kfold = model_selection.KFold(n_splits=10, random_state=7, shuffle=True)
+    results = model_selection.cross_val_score(
+        model, X, y, cv=kfold, scoring='neg_mean_absolute_error')
+    # print("MAE: %.3f (%.3f)" % (results.mean(), results.std()))
+    mae = results.mean()
+    results = model_selection.cross_val_score(
+        model, X, y, cv=kfold, scoring='neg_mean_squared_error')
+    # print("MSE: %.3f (%.3f)" % (results.mean(), results.std()))
+    mse = results.mean()
+    results = model_selection.cross_val_score(
+        model, X, y, cv=kfold, scoring='r2')
+    # print("R^2: %.3f (%.3f)" % (results.mean(), results.std()))
+    r2 = results.mean()
+    return mae, mse, r2
 
-    evaluation_methods = []
-    evaluation_scores = []
+def create_LSTM_model(X_train):
+  regressor = Sequential()
+  regressor.add(LSTM(units = 50, return_sequences = True, input_shape = (X_train.shape[1], 1)))
+  regressor.add(Dropout(rate = 0.2))
+  regressor.add(LSTM(units = 150, return_sequences = False, input_shape = (X_train.shape[1], 1)))
+  regressor.add(Dropout(rate = 0.2))
+  regressor.add(Dense(1))
 
-    confusion_majority=confusion_matrix(y_test, y_pred)
+  return regressor
 
-    print('Majority classifier Confusion Matrix\n', confusion_majority)
+def Run_LSTM(training_set, df, is_cases):
+  sc = MinMaxScaler(feature_range = (0, 1))
+  #fit: get min/max of train data
+  training_set_scaled = sc.fit_transform(training_set)
+  # training_set_scaled = training_set
 
-    print('**********************')
-    print('Majority TN= ', confusion_majority[0][0])
-    print('Majority FP=', confusion_majority[0][1])
-    print('Majority FN= ', confusion_majority[1][0])
-    print('Majority TP= ', confusion_majority[1][1])
-    print('**********************')
+  ## 30 timesteps and 1 output
+  X_train = []
+  y_train = []
+  for i in range(30, len(training_set_scaled)):
+      X_train.append(training_set_scaled[i-30: i, 0])
+      y_train.append(training_set_scaled[i, 0])
 
-    precision = precision_score(y_test, y_pred, average="weighted")
-    recall = recall_score(y_test, y_pred, average="weighted")
-    f1 = f1_score(y_test, y_pred, average="weighted")
-    accuracy = accuracy_score(y_test, y_pred)
+  X_train, y_train = np.array(X_train), np.array(y_train)
 
-    evaluation_methods.append('Precision')
-    evaluation_methods.append('Recall')
-    evaluation_methods.append('F1')
-    evaluation_methods.append('Accuracy')
-    evaluation_scores.append(precision)
-    evaluation_scores.append(recall)
-    evaluation_scores.append(f1)
-    evaluation_scores.append(accuracy)
-    return pd.DataFrame({'Evaluation Method':evaluation_methods, 'Score':evaluation_scores}).set_index('Evaluation Method')
+  X_train = np.reshape(X_train, newshape = (X_train.shape[0], X_train.shape[1], 1))
+  regressor = create_LSTM_model(X_train)
+  regressor.compile(loss='mean_squared_error', optimizer='adam')
+  regressor.fit(X_train, y_train, epochs=100, batch_size=32, verbose=2)
+  
+  dataset_test = df.iloc[-30:, :]
+  dataset_train = df.iloc[:-30, :]
+  if is_cases:
+    dataset_total = pd.concat((dataset_train['cases_new'], dataset_test['cases_new']),axis = 0)
+  else:
+    dataset_total = pd.concat((dataset_train['deaths_new'], dataset_test['deaths_new']),axis = 0)
+  inputs = dataset_total[len(dataset_total) - len(dataset_test) - 30:].values
+  inputs = inputs.reshape(-1, 1)
+  inputs = inputs.astype(float)
+  inputs = sc.transform(inputs)
+  # your codes
+  ## 60 timesteps and 1 output
+  X_test = []
+  y_test = []
+  for i in range(30, len(inputs)):
+      X_test.append(inputs[i-30: i, 0])
+      y_test.append(inputs[i, 0])
 
-def showMSE(y_test,y_pred):
-    from sklearn.metrics import r2_score,median_absolute_error,mean_squared_error,mean_absolute_error
-    evaluation_methods = []
-    evaluation_scores = []
-    
-    evaluation_methods.append('Median absolute error')
-    evaluation_methods.append('Mean absolute error (MAE)')
-    evaluation_methods.append('Mean squared error (MSE)')
-    evaluation_methods.append('Root mean square error (RMSE)')
-    evaluation_methods.append('R squared (R2)')
-    
-    evaluation_scores.append(median_absolute_error(y_test, y_pred))
-    evaluation_scores.append(mean_absolute_error(y_test, y_pred))
-    evaluation_scores.append(mean_squared_error(y_test, y_pred))
-    evaluation_scores.append(np.sqrt(mean_squared_error(y_test,y_pred)))
-    evaluation_scores.append(r2_score(y_test,y_pred))
-    return pd.DataFrame({'Evaluation Method':evaluation_methods, 'Error':evaluation_scores}).set_index('Evaluation Method')
-
-def classify(X,y):
-        c1,c2 = st.columns(2)
-        c1.markdown("> ## Decision Tree Classifier")
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 2)
-        clf = DecisionTreeClassifier(criterion="gini", max_depth=4, splitter='random') #pruning the tree by setting the depth
-        clf = clf.fit(X_train,y_train)# Train Decision Tree Classifer*
-        y_pred = clf.predict(X_test)#Predict the response for test dataset*
-        #print(clf)
-        df = confusion_report(y_test,y_pred)
-        c1.table(df)
-        c2.markdown("> ## Gaussian Naive Bayes Classifier")
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 2)
-        model = GaussianNB()
-        model = model.fit(X_train,y_train)
-        y_pred = model.predict(X_test)
-        #print(model)
-        c2.table(confusion_report(y_test,y_pred))
-
-def regressor(X,y):
-    c1,c2 = st.columns(2)
-    c1.markdown("> ## Random Forest Regressor")
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 2)
-    rfr = RandomForestRegressor()
-    rfr.fit(X, y)
-    y_pred = rfr.predict(X_test)
-    c1.table(showMSE(y_test,y_pred))
-    
-    c2.markdown("> ## Linear Regressor")
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 2)
-    model = LinearRegression()
-    model.fit(X_train,y_train)
-    y_pred = model.predict(X_test)
-    c2.table(showMSE(y_test,y_pred))
-    st.write("> #### Linear Regressor has similar accuracy with Lasso Regressor")
-    
-def getBinsRange(df):  
-        data = df['cases_new'].values
-        # First quartile (Q1)
-        Q1 = np.percentile(data, 25, interpolation = 'midpoint')
-        # Third quartile (Q3)
-        Q3 = np.percentile(data, 75, interpolation = 'midpoint')
-
-        return [np.min(data),Q1,Q3,np.inf]
-
+  X_test, y_test = np.array(X_test), np.array(y_test)
+  X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
+  y_test = np.reshape(y_test, (y_test.shape[0], 1))
+  predict_value = regressor.predict(X_test)
+  #inverse the scaled value
+  # your codes
+  predicted_values = sc.inverse_transform(predict_value)
+  real_values= sc.inverse_transform(y_test)
+  return predicted_values,real_values
 
 def app():
-    st.markdown('> What is the cumulative vaccinated & cumulative vaccination registration trend for each state')
-    state_choice = st.selectbox( label = "Choose a State :", options=['Johor','Kedah','Pahang','Selgor','All 4 states'] )
-    model_choice = st.selectbox( label = "Choose regressor or classifier :", options=['Regressor','Classifier'] )
-    features = {'Features used': ['hosp_covid_hospital','rtk-ag','cases_recovered','pcr','Checkins number','cases_new']}
-    
-    st.table(pd.DataFrame(features))
-    
-    if state_choice == "Pahang":
-        df = rslt_df_ph
-    elif state_choice == "Kedah":
-        df = rslt_df_kd
-    elif state_choice == "Johor":  
-        df = rslt_df_jh
-    elif state_choice == "Selangor":
-        df = rslt_df_sl
-    elif state_choice == "All 4 states":
-        df = df_final
-        
-    print(df)
-    
-    if model_choice == "Classifier":
-        df['cases_new_category'] = (pd.cut(df['cases_new'], bins=getBinsRange(df),labels=['Low', 'Medium', 'High'], include_lowest=True))
-        X = df.drop(['cases_new','date','state','cases_new_category'], axis=1)
-        y = df.cases_new_category 
-        classify(X,y)
-        df.drop('cases_new_category',axis=1,inplace=True)
-    else:
-        X = df.drop(['cases_new','date','state'], axis=1)  #predict newcases
-        y = df['cases_new']
-        regressor(X,y)
-        
-    st.markdown('Among the approaches to find the best regression model, we have tried fitting into decision tree regressor, linear regression, lasso regression, and random forest regression. As a result, the decision tree regressor is not suitable as its Mean Squared Error is the highest among the models. __Linear regression__ is having a similar accuracy with Lasso regression. Lastly, __Random forest regression__ works the best and has the highest accuracy to predict the Covid-19 daily new cases. Evaluation metrics used for regression have Median absolute error, Mean absolute error (MAE), Mean squared error (MSE), Root mean square error (RMSE) and R squared (R2). For the classification model, we have trained the data using decision tree classifier, logistic regression classifier, K-Nearest Neighbour (KNN) and Gaussian Naive Bayes model. In predicting the test data, __Gaussian Naive Bayes__ have the best accuracy, followed by __Decision Tree classifier__, Logistic regression classifier and KNN. Evaluation metrics used in classification models are precision and recall score, F1 score and Accuracy (number of correct predictions/ total number of predictions made). By using __Johor and All 4 states datasets__, the model is predicting the higher accuracy of daily new cases than the other datasets (Kedah, Pahang, Selangor dataset). ')
+    st.markdown('>  Predict the R naught index of Malaysia and states')
+    mae_list = []
+    mse_list = []
+    r2_list = []
 
+    model = LinearRegression()
+    mae, mse, r2 = model_evaluation(model, X, y)
+    mae_list.append(mae)
+    mse_list.append(mse)
+    r2_list.append(r2)
+
+    model = DecisionTreeRegressor(max_depth=2)
+    mae, mse, r2 = model_evaluation(model, X, y)
+    mae_list.append(mae)
+    mse_list.append(mse)
+    r2_list.append(r2)    
+    
+    model = Lasso(alpha=1.0)
+    mae, mse, r2 = model_evaluation(model, X, y)
+    mae_list.append(mae)
+    mse_list.append(mse)
+    r2_list.append(r2)
+
+    model = SVR()
+    mae, mse, r2 = model_evaluation(model, X, y)
+    mae_list.append(mae)
+    mse_list.append(mse)
+    r2_list.append(r2)
+
+    model = RandomForestRegressor(max_depth=2)
+    mae, mse, r2 = model_evaluation(model, X, y)
+    mae_list.append(mae)
+    mse_list.append(mse)
+    r2_list.append(r2)
+    model_list = ['Linear Regression','Decision Tree Regression', 'Lasso Regression', 'SVR Regression', 'Random Forest Regression']
+    d = {'Regression Algorithm':model_list,'MAE': mae_list, 'MSE': mse_list, 'R2':r2_list}
+    st.table(pd.DataFrame(data=d))
+
+    ##visualize the prediction and real price
+    training_set = malaysia_case_df.iloc[:-30, 1:2].values
+    predicted_values, real_values = Run_LSTM(training_set,malaysia_case_df, True)
+    plt.plot(real_values, color = 'red', label = 'Real New Case Value')
+    plt.plot(predicted_values, color = 'blue', label = 'Predicted New Case Value')
+
+    plt.title('Malaysia New Case Prediction')
+    plt.xlabel('Time')
+    plt.ylabel('New Case Number')
+    plt.legend()
+    plt.show()
+    st.pyplot()
+
+    training_set = malaysia_death_df.iloc[:-30, 1:2].values
+    predicted_values, real_values = Run_LSTM(training_set,malaysia_death_df, False)
+    plt.plot(real_values, color = 'red', label = 'Real New Deaths Value')
+    plt.plot(predicted_values, color = 'blue', label = 'Predicted New Deaths Value')
+    # plt.ylim(np.amin(np.concatenate([predicted_values, real_values])),np.amax(np.concatenate([predicted_values, real_values])))
+
+    plt.title('Malaysia New Deaths Prediction')
+    plt.xlabel('Time')
+    plt.ylabel('New Deaths Number')
+    plt.legend()
+    plt.show()
+    st.pyplot()
