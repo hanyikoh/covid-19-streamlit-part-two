@@ -157,7 +157,12 @@ def app():
         clf = DecisionTreeClassifier(criterion="entropy", max_depth=5, splitter='random') #pruning the tree by setting the depth
         clf = clf.fit(X_train,y_train)
         y_pred = clf.predict(X_test)
-        
+        result = pd.DataFrame()
+        result = pd.DataFrame(X_test)
+        result['y_test'] = y_test.ravel()
+        result['y_pred'] = y_pred
+        table = result.head()
+        st.table(table)
         cm = confusion_matrix(y_test, y_pred)
         plt.figure(figsize=(8, 6))
         plt.title('Confusion Matrix (with SMOTE)', size=16)
