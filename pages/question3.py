@@ -159,7 +159,7 @@ def app():
         sns.heatmap(cm, annot=True, cmap='Blues')
         st.pyplot()
         
-        print('Precision= {:.2f}'.format(precision_score(y_test, y_pred, average="weighted")))
-        print('Recall= {:.2f}'. format(recall_score(y_test, y_pred, average="weighted")))
-        print('F1= {:.2f}'. format(f1_score(y_test, y_pred, average="weighted")))
-        print('Accuracy= {:.2f}'. format(accuracy_score(y_test, y_pred)))
+        st.markdown('##### Precision= {:.2f}'.format(precision_score(y_test, y_pred, average="weighted")))
+        st.markdown('##### Recall= {:.2f}'. format(recall_score(y_test, y_pred, average="weighted")))
+        st.markdown('##### F1= {:.2f}'. format(f1_score(y_test, y_pred, average="weighted")))
+        st.markdown('##### Accuracy= {:.2f}'. format(accuracy_score(y_test, y_pred)))
