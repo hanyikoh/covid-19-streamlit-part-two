@@ -12,65 +12,77 @@ states_tests_dir = "dataset/tests_state.csv"
 pkrc_dir = "dataset/pkrc.csv"
 checkIn_dir = "dataset/checkin_state.csv"
 hospital_dir = "dataset/hospital.csv"
+deaths_dir = "dataset/deaths_state.csv"
+vaccine_dir = "dataset/vax_state.csv"
+aefi_dir = "dataset/aefi.csv"
+
 
 def app():
-    st.markdown('> Discuss the exploratory data analysis steps you have conducted including detection of outliers and missing values?')
+    st.markdown('> Informative Insights from the Datasets')
     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
     chosen = st.radio(
-    'Choose a Dataset',
-    ["Malaysia Cases", "State Cases", "Clusters", "Malaysia Tests","State Tests","PKRC","Hospital","State CheckIn"])
-    st.markdown(f"__{chosen} Dataset:__")
+    'Choose a Topic',
+    ["Relationships between Covid-19 Vaccination and Daily NewCases", 
+     "Covid-19 Daily New Cases and Daily New Deaths for each State", 
+     "The admission and discharge flow in PKRC, hospital, ICUand ventilators usage situation of each state", 
+     "The trend for vaccinated and cumulative vaccination reg-istration for each state",
+     "The trend of R naught index value for each state",
+     "The  interest  in  COVID-19  keywords  of  each  state  fromgoogle trends data"])
+    st.markdown(f"__{chosen} :__")
     start_date = "2021-07-01"
-    end_date = "2021-08-31"
+    end_date = "2021-09-30"
 
-    if chosen == "State Cases":
+    if chosen == "Relationships between Covid-19 Vaccination and Daily NewCases":
+        vaccine_df = pd.read_csv(vaccine_dir)
+        deaths_df = pd.read_csv(deaths_dir)
+        after_start_date = vaccine_df["date"] >= start_date
+        before_end_date = vaccine_df["date"] <= end_date
+        between_two_dates = after_start_date & before_end_date
+        vaccine_df = vaccine_df.loc[between_two_dates]
+        
         state_case_df = pd.read_csv(state_case_dir)
         after_start_date = state_case_df["date"] >= start_date
         before_end_date = state_case_df["date"] <= end_date
         between_two_dates = after_start_date & before_end_date
         state_case_df = state_case_df.loc[between_two_dates]
-
-        st.text('Daily recorded COVID-19 cases at state level.')
-        st.write('First 5 rows of the dataset')
-        st.table(state_case_df.head().reset_index(drop=True))
         
-        st.write('Statistical Overview')
-        st.table(state_case_df.describe())
+        df = pd.DataFrame()
+        df['vaccine'] = vaccine_df.daily.cumsum()
+        df =(df-df.min())/(df.max()-df.min())
+        df['date'] = vaccine_df.date
+        df['state'] = vaccine_df.state
+        df.set_index('date',inplace=True)
+
+        df2 = pd.DataFrame()
+        df2['cases_new'] = state_case_df.cases_new
+        df2 =(df2-df2.min())/(df2.max()-df2.min())
+        df2['date'] = state_case_df.date
+
+        df2.set_index('date',inplace=True)
+        df = pd.concat([df, df2], axis=1)
+        df3= df.copy()
+        df = df.groupby('date').sum()
+
         
-        st.write("Missing Values Detection")
-        col1, col2 = st.columns(2)
-        null_df=pd.DataFrame({'Column':state_case_df.isna().sum().index, 'Count of Null Values':state_case_df.isna().sum().values})  
-        col1.table(null_df)
-        
-        missing_values = state_case_df.isnull().sum() / len(state_case_df)
-        missing_values = missing_values[missing_values > 0]
-        missing_values.sort_values(inplace=True)
-        missing_values = missing_values.to_frame()
-        missing_values.columns = ['Count of Missing Values']
-        missing_values.index.names = ['Name']
-        missing_values['Column Name'] = state_case_df.columns
-
-        sns.set(style="whitegrid", color_codes=True)
-        sns.barplot(x = 'Column Name', y = 'Count of Missing Values', data=missing_values)
-        plt.xticks(rotation = 90)
-        plt.show()
-        col2.pyplot()
-
-        st.write('Outliers detection with Boxplot')
-        fig, axes = plt.subplots(1, 3, figsize=(15, 5), sharey=True)
-        # fig.suptitle('Outliers Visualization')
-        plt.subplots_adjust(left=None, bottom= 0.1, right=None, top=0.5, wspace=0.2, hspace=0.6)
-
-        sns.boxplot(data=state_case_df,x=state_case_df["cases_import"],ax=axes[0])
-        axes[0].set_title('Import Case')
-        sns.boxplot(data=state_case_df,x=state_case_df["cases_new"],ax=axes[1])
-        axes[1].set_title('New Case')
-        sns.boxplot(data=state_case_df,x=state_case_df["cases_recovered"],ax=axes[2])
-        axes[2].set_title('Recovered Case')
-        st.set_option('deprecation.showPyplotGlobalUse', False)
+        sns.set(rc={'figure.figsize':(8,8)})
+        sns.set(style='whitegrid')
+        sns.scatterplot(data=df, x="vaccine", y="cases_new")
+        plt.title('Effects of Vaccination on Daily New Cases')
+        plt.xlabel('Vaccination')
+        plt.ylabel('Daily New Cases')
         st.pyplot()
+        st.text('Overall, vaccination has affected the daily Covid-19 new cases and play its role in Malaysia significantly.')
+        st.text('Next, we look into each state and see the effetiveness of vaccination.')
+        state = ['Johor', 'Kedah', 'Kelantan', 'Melaka', 'Negeri Sembilan', 'Pahang', 'Perak', 'Perlis', 'Pulau Pinang', 'Sabah', 'Sarawak', 'Selangor', 'Terengganu', 'W.P. Kuala Lumpur', 'W.P. Labuan', 'W.P. Putrajaya']
+        sns.set(rc={'figure.figsize':(8,8)})
+        graph = sns.FacetGrid(df3, row ="state", row_order=state ,hue ="state",height=4, aspect=1)
+        # map the above form facetgrid with some attributes
+        graph.map(plt.scatter, "vaccine", "cases_new", edgecolor ="w").add_legend()
+        # show the object
+        st.pyplot()
+        st.text('In conclusion, the states daily new cases that has been affected a lot by vac-cination are Johor, Kedah, Pulau Penang, Sabah, Selangor and W.P. KualaLumpur.  The states mentioned are having strong correlation between vac-cination and daily new cases for each state from July until September.  This is probably related to the population density and the r-naught value of thestates mentioned above.')
 
-    elif chosen == "Clusters":
+    elif chosen == "Covid-19 Daily New Cases and Daily New Deaths for each State":
         clusters_df = pd.read_csv(clusters_dir)
         after_start_date = clusters_df["date_announced"] >= start_date
         before_end_date = clusters_df["date_announced"] <= end_date
@@ -127,7 +139,7 @@ def app():
         sns.boxplot(data=clusters_df,x=clusters_df["recovered"])
         st.pyplot()
 
-    elif chosen == "State Tests":
+    elif chosen == "The admission and discharge flow in PKRC, hospital, ICUand ventilators usage situation of each state":
         states_tests_df = pd.read_csv(states_tests_dir)
         after_start_date = states_tests_df["date"] >= start_date
         before_end_date = states_tests_df["date"] <= end_date
@@ -173,7 +185,7 @@ def app():
         st.set_option('deprecation.showPyplotGlobalUse', False)
         st.pyplot()
 
-    elif chosen == "Malaysia Cases":
+    elif chosen == "The trend for vaccinated and cumulative vaccination reg-istration for each state":
         malaysia_case_df = pd.read_csv(malaysia_case_dir)
         after_start_date = malaysia_case_df["date"] >= start_date
         before_end_date = malaysia_case_df["date"] <= end_date
@@ -236,7 +248,7 @@ def app():
         st.set_option('deprecation.showPyplotGlobalUse', False)
         st.pyplot()
 
-    elif chosen == "Malaysia Tests":
+    elif chosen == "The trend of R naught index value for each state":
         malaysia_tests_df = pd.read_csv(malaysia_tests_dir)
         after_start_date = malaysia_tests_df["date"] >= start_date
         before_end_date = malaysia_tests_df["date"] <= end_date
@@ -283,7 +295,7 @@ def app():
         st.set_option('deprecation.showPyplotGlobalUse', False)
         st.pyplot()
 
-    elif chosen == "PKRC":
+    elif chosen == "The  interest  in  COVID-19  keywords  of  each  state  fromgoogle trends data":
         pkrc_df = pd.read_csv(pkrc_dir)
         after_start_date = pkrc_df["date"] >= start_date
         before_end_date = pkrc_df["date"] <= end_date
@@ -346,116 +358,4 @@ def app():
         st.set_option('deprecation.showPyplotGlobalUse', False)
         st.pyplot()
 
-    elif chosen == "State CheckIn":
-        checkIn_df = pd.read_csv(checkIn_dir)
-        after_start_date = checkIn_df["date"] >= start_date
-        before_end_date = checkIn_df["date"] <= end_date
-        between_two_dates = after_start_date & before_end_date
-        checkIn_df = checkIn_df.loc[between_two_dates]
-
-        st.text('Daily checkins on MySejahtera at state level.')
-        st.write('First 5 rows of the dataset')
-        st.table(checkIn_df.head().reset_index(drop=True))
-
-        st.write('Statistical Overview')
-        st.table(checkIn_df.describe())
-
-        st.write("Missing Values Detection")
-        col1, col2 = st.columns(2)
-        null_df=pd.DataFrame({'Column':checkIn_df.isna().sum().index, 'Count of Null Values':checkIn_df.isna().sum().values})  
-        col1.table(null_df)
-        
-        missing_values = checkIn_df.isnull().sum() / len(checkIn_df)
-        missing_values = missing_values[missing_values > 0]
-        missing_values.sort_values(inplace=True)
-        missing_values = missing_values.to_frame()
-        missing_values.columns = ['Count of Missing Values']
-        missing_values.index.names = ['Name']
-        missing_values['Column Name'] = checkIn_df.columns
-
-        sns.set(style="whitegrid", color_codes=True)
-        sns.barplot(x = 'Column Name', y = 'Count of Missing Values', data=missing_values)
-        plt.xticks(rotation = 90)
-        plt.show()
-        col2.pyplot()
-
-        st.write('Outliers detection with Boxplot')
-        fig, axes = plt.subplots(1, 3, figsize=(15, 5), sharey=True)
-        # fig.suptitle('Outliers Visualization')
-        plt.subplots_adjust(left=None, bottom= 0.1, right=None, top=0.5, wspace=0.2, hspace=0.6)
-
-        sns.boxplot(data=checkIn_df, x = checkIn_df["checkins"],ax=axes[0])
-        axes[0].set_title('checkins')
-        sns.boxplot(data=checkIn_df,x = checkIn_df["unique_ind"],ax=axes[1])
-        axes[1].set_title('unique_ind')
-        sns.boxplot(data=checkIn_df, x = checkIn_df["unique_loc"],ax=axes[2])
-        axes[2].set_title('unique_loc')
-
-        st.set_option('deprecation.showPyplotGlobalUse', False)
-        st.pyplot()
-
-    elif chosen == "Hospital":
-        hospital_df = pd.read_csv(hospital_dir)
-        after_start_date = hospital_df["date"] >= start_date
-        before_end_date = hospital_df["date"] <= end_date
-        between_two_dates = after_start_date & before_end_date
-        hospital_df = hospital_df.loc[between_two_dates]
-        hospital_df.head()
-        st.text('Flow of patients to/out of hospitals, with capacity and utilisation.')
-        st.write('First 5 rows of the dataset')
-        st.table(hospital_df.head().reset_index(drop=True))
-
-        st.write('Statistical Overview')
-        st.table(hospital_df.describe())
-
-        st.write("Missing Values Detection")
-        col1, col2 = st.columns(2)
-        null_df=pd.DataFrame({'Column':hospital_df.isna().sum().index, 'Count of Null Values':hospital_df.isna().sum().values})  
-        col1.table(null_df)
-        
-        missing_values = hospital_df.isnull().sum() / len(hospital_df)
-        missing_values = missing_values[missing_values > 0]
-        missing_values.sort_values(inplace=True)
-        missing_values = missing_values.to_frame()
-        missing_values.columns = ['Count of Missing Values']
-        missing_values.index.names = ['Name']
-        missing_values['Column Name'] = hospital_df.columns
-
-        sns.set(style="whitegrid", color_codes=True)
-        sns.barplot(x = 'Column Name', y = 'Count of Missing Values', data=missing_values)
-        plt.xticks(rotation = 90)
-        plt.show()
-        col2.pyplot()
-
-        st.write('Outliers detection with Boxplot')
-        fig, axes = plt.subplots(4, 3, figsize=(15, 5), sharey=True)
-        plt.subplots_adjust(left=None, bottom= 0.1, right=None, top=2, wspace=0.2, hspace=0.6)
-        sns.boxplot(data=hospital_df, x = hospital_df["beds"],ax=axes[0][0])
-        axes[0][0].set_title('beds')
-        sns.boxplot(data=hospital_df,x = hospital_df["beds_covid"],ax=axes[0][1])
-        axes[0][1].set_title('beds_covid')
-        sns.boxplot(data=hospital_df, x = hospital_df["beds_noncrit"],ax=axes[0][2])
-        axes[0][2].set_title('beds_noncrit')
-        sns.boxplot(data=hospital_df, x = hospital_df["admitted_pui"],ax=axes[1][0])
-        axes[1][0].set_title('admitted_pui')
-        sns.boxplot(data=hospital_df,x = hospital_df["admitted_covid"],ax=axes[1][1])
-        axes[1][1].set_title('admitted_covid')
-        sns.boxplot(data=hospital_df, x = hospital_df["admitted_total"],ax=axes[1][2])
-        axes[1][2].set_title('admitted_total')
-        sns.boxplot(data=hospital_df, x = hospital_df["discharged_pui"],ax=axes[2][0])
-        axes[2][0].set_title('discharged_pui')
-        sns.boxplot(data=hospital_df,x = hospital_df["discharged_covid"],ax=axes[2][1])
-        axes[2][1].set_title('discharged_covid')
-        sns.boxplot(data=hospital_df, x = hospital_df["discharged_total"],ax=axes[2][2])
-        axes[2][2].set_title('discharged_total')
-        sns.boxplot(data=hospital_df, x = hospital_df["hosp_covid"],ax=axes[3][0])
-        axes[3][0].set_title('hosp_covid')
-        sns.boxplot(data=hospital_df,x = hospital_df["hosp_pui"],ax=axes[3][1])
-        axes[3][1].set_title('hosp_pui')
-        sns.boxplot(data=hospital_df, x = hospital_df["hosp_noncovid"],ax=axes[3][2])
-        axes[3][2].set_title('hosp_noncovid')
-
-        st.set_option('deprecation.showPyplotGlobalUse', False)
-        st.pyplot()
-
-    st.markdown('In this part, we tried to explore the data and generate initial insights. After reading in the datasets and filtering out the months needed, we have used functions such as _head(), info(), describe(), shape()_ to learn the basic information of each dataset and used _isna()_ and isnull() to find any existence of missing data. There are no null values found, hence in this part we did not do any action of filling nulls. Thus, boxplots for every column in the datasets were used to visualize the data distribution in terms of the shape, spreadness, min, mode, median, and outliers. The processes above were repeated for all eight datasets.')
+    st.markdown('In this part, we are trying to explore and generate informative insights from the Malaysia COVID-19 Cases and Vaccination datasets.')
