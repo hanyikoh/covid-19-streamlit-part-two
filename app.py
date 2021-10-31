@@ -36,16 +36,9 @@ st.sidebar.markdown('''
 )
 
 question_num = st.sidebar.selectbox(
-    'Select Question:',
-('Question (i)', 'Question (ii)', 'Question (iii)', 'Question (iv)')
+    'Select Sections:',
+('Informative Insights from the Datasets','Clustering','Classification','Regression')
 )
-
-st.sidebar.markdown('__Questions__')
-
-st.sidebar.markdown('i. Exploratory data analysis steps conducted.')
-st.sidebar.markdown('ii. States that exhibit strong correlation with Pahang and Johor.')
-st.sidebar.markdown('iii. Strong features/indicators to daily cases for Pahang, Kedah, Johor, and Selangor.')
-st.sidebar.markdown('iv. Models (regression/classification) that performs well in predicting the daily cases for Pahang, Kedah, Johor, and Selangor.')
 
 st.sidebar.markdown('__Datasets Used__')
 st.sidebar.markdown('Categories: Cases and Testing, Healthcare, Mobility and Contact Tracing')
@@ -59,19 +52,19 @@ st.sidebar.markdown('''<small>TDS 3301 Data Mining | Group Assignment </small>''
 # Web App Title
 mmu = Image.open('./mmu_logo.png')
 st.image(mmu, width=300)
-st.title("TDS 3301 Data Mining - Group Assignment")
-st.write("Question 3: COVID-19 in Malaysia")
+st.title("TDS 3301 Data Mining - Group Project")
+st.write("QUESTION 2: Malaysia COVID-19 Cases and Vaccination")
 st.header(f"{question_num}")
 
 
-if question_num == "Question (i)":
+if question_num == "Informative Insights from the Datasets":
     question1.app()
 
-elif question_num == "Question (ii)":
+elif question_num == "Clustering":
     question2.app()
 
-elif question_num == "Question (iii)":
+elif question_num == "Classification":
     question3.app()
 
-elif question_num == "Question (iv)":
+elif question_num == "Regression":
     question4.app()
