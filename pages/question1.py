@@ -16,7 +16,6 @@ deaths_dir = "dataset/deaths_state.csv"
 vaccine_dir = "dataset/vax_state.csv"
 aefi_dir = "dataset/aefi.csv"
 
-
 def app():
     st.markdown('> Informative Insights from the Datasets')
     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
@@ -31,6 +30,7 @@ def app():
     start_date = "2021-07-01"
     end_date = "2021-09-30"
 
+
     if chosen == "Relationships between Covid-19 Vaccination and Daily NewCases":
         vaccine_df = pd.read_csv(vaccine_dir)
         deaths_df = pd.read_csv(deaths_dir)
@@ -39,19 +39,18 @@ def app():
         between_two_dates = after_start_date & before_end_date
         vaccine_df = vaccine_df.loc[between_two_dates]
         
-        state_case_df = pd.read_csv(state_case_dir)
-        after_start_date = state_case_df["date"] >= start_date
-        before_end_date = state_case_df["date"] <= end_date
-        between_two_dates = after_start_date & before_end_date
-        state_case_df = state_case_df.loc[between_two_dates]
-        
         df = pd.DataFrame()
         df['vaccine'] = vaccine_df.daily.cumsum()
         df =(df-df.min())/(df.max()-df.min())
         df['date'] = vaccine_df.date
         df['state'] = vaccine_df.state
         df.set_index('date',inplace=True)
-
+        state_case_df = pd.read_csv(state_case_dir)
+        after_start_date = state_case_df["date"] >= start_date
+        before_end_date = state_case_df["date"] <= end_date
+        between_two_dates = after_start_date & before_end_date
+        state_case_df = state_case_df.loc[between_two_dates]
+        
         df2 = pd.DataFrame()
         df2['cases_new'] = state_case_df.cases_new
         df2 =(df2-df2.min())/(df2.max()-df2.min())
@@ -62,7 +61,6 @@ def app():
         df3= df.copy()
         df = df.groupby('date').sum()
 
-        
         sns.set(rc={'figure.figsize':(8,8)})
         sns.set(style='whitegrid')
         sns.scatterplot(data=df, x="vaccine", y="cases_new")
@@ -88,63 +86,46 @@ def app():
         # show the object
         plt.show()
         st.pyplot()
-    elif chosen == "Covid-19 Daily New Cases and Daily New Deaths for each State":
-        clusters_df = pd.read_csv(clusters_dir)
-        after_start_date = clusters_df["date_announced"] >= start_date
-        before_end_date = clusters_df["date_announced"] <= end_date
-        between_two_dates = after_start_date & before_end_date
-        clusters_df = clusters_df.loc[between_two_dates]
-        clusters_df['date'] = clusters_df.date_announced
-
-        st.text('Exhaustive list of announced clusters with relevant epidemiological datapoint.')
-        st.write('First 5 rows of the dataset')
-        st.table(clusters_df.head().reset_index(drop=True))
-
-        st.write('Statistical Overview')
-        st.table(clusters_df.describe())
-
-        st.write("Missing Values Detection")
-        col1, col2 = st.columns(2)
-        null_df=pd.DataFrame({'Column':clusters_df.isna().sum().index, 'Count of Null Values':clusters_df.isna().sum().values})  
-        col1.table(null_df)
         
-        missing_values = clusters_df.isnull().sum() / len(clusters_df)
-        missing_values = missing_values[missing_values > 0]
-        missing_values.sort_values(inplace=True)
-        missing_values = missing_values.to_frame()
-        missing_values.columns = ['Count of Missing Values']
-        missing_values.index.names = ['Name']
-        missing_values['Column Name'] = clusters_df.columns
+    elif chosen == "Covid-19 Daily New Cases and Daily New Deaths for each State":
+        deaths_df = pd.read_csv(deaths_dir)
+        after_start_date = deaths_df["date"] >= start_date
+        before_end_date = deaths_df["date"] <= end_date
+        between_two_dates = after_start_date & before_end_date
+        deaths_df = deaths_df.loc[between_two_dates]
+        
+        dc = pd.DataFrame()
+        dc['deaths_cases'] = deaths_df.deaths_new
+        dc =(dc-dc.min())/(dc.max()-dc.min())
+        dc['date'] = deaths_df.date
+        dc['state'] = deaths_df.state
+        dc.set_index('date',inplace=True)
+        
+        state_case_df = pd.read_csv(state_case_dir)
+        after_start_date = state_case_df["date"] >= start_date
+        before_end_date = state_case_df["date"] <= end_date
+        between_two_dates = after_start_date & before_end_date
+        state_case_df = state_case_df.loc[between_two_dates]
+        df2 = pd.DataFrame()
+        df2['cases_new'] = state_case_df.cases_new
+        df2 =(df2-df2.min())/(df2.max()-df2.min())
+        df2['date'] = state_case_df.date
 
-        sns.set(style="whitegrid", color_codes=True)
-        sns.barplot(x = 'Column Name', y = 'Count of Missing Values', data=missing_values)
-        plt.xticks(rotation = 90)
-        plt.show()
-        col2.pyplot()
-
-        st.write('Outliers detection with Boxplot')
-        fig, axes = plt.subplots(3, 3, figsize=(15, 5), sharey=True)
-        plt.subplots_adjust(left=None, bottom= 0.1, right=None, top=2, wspace=0.2, hspace=0.6)
-        sns.boxplot(data=clusters_df,x=clusters_df["cases_new"],ax=axes[0][0])
-        axes[0][0].set_title('cases_new')
-        sns.boxplot(data=clusters_df,x=clusters_df["cases_total"],ax=axes[0][1])
-        axes[0][1].set_title('cases_total')
-        sns.boxplot(data=clusters_df,x=clusters_df["cases_active"],ax=axes[0][2])
-        axes[0][2].set_title('cases_active')
-        sns.boxplot(data=clusters_df,x=clusters_df["tests"],ax=axes[1][0])
-        axes[1][0].set_title('tests')
-        sns.boxplot(data=clusters_df,x=clusters_df["icu"],ax=axes[1][1])
-        axes[1][1].set_title('icu')
-        sns.boxplot(data=clusters_df,x=clusters_df["deaths"],ax=axes[1][2])
-        axes[1][2].set_title('deaths')
-        sns.boxplot(data=clusters_df,x=clusters_df["recovered"],ax=axes[2][0])
-        axes[2][0].set_title('recovered')
-        fig.delaxes(axes[2][1])
-        fig.delaxes(axes[2][2])
-
-        sns.boxplot(data=clusters_df,x=clusters_df["recovered"])
+        df2.set_index('date',inplace=True)
+        nc_dc = pd.concat([dc, df2], axis=1)
+        mean = nc_dc.groupby('state').mean()
+        print("Avg Deaths median value: " ,mean.deaths_cases.median())
+        print("Avg Daily New Cases median value: " ,mean.cases_new.median())
+        
+        sns.set(rc={'figure.figsize':(20,8)})
+        sns.set(style='whitegrid')
+        sns.lineplot(data=mean)
+        plt.title('Average Daily New Cases and New Deaths of each state')
         st.pyplot()
-
+        
+        state_list = mean.loc[(mean['deaths_cases'] >= 0.019) & (mean['cases_new'] >= 0.09)]
+        st.table(state_list)
+        
     elif chosen == "The admission and discharge flow in PKRC, hospital, ICUand ventilators usage situation of each state":
         states_tests_df = pd.read_csv(states_tests_dir)
         after_start_date = states_tests_df["date"] >= start_date
