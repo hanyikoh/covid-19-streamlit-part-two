@@ -41,7 +41,7 @@ question_num = st.sidebar.selectbox(
 )
 
 st.sidebar.markdown('__Datasets Used__')
-st.sidebar.markdown('Categories: Cases and Testing, Healthcare, Mobility and Contact Tracing')
+st.sidebar.markdown('CITF, Rnaught, GoogleTrends and MOH Datasets')
 
 st.sidebar.markdown('__Open data on COVID-19 in Malaysia__')
 st.sidebar.markdown('[Ministry of Health (MOH) Malaysia](https://github.com/MoH-Malaysia/covid19-public)')

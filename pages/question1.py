@@ -314,7 +314,7 @@ def app():
         ax.set_ylabel("Interest Score")
         st.pyplot()
 
-        st.subheader('Astraneca')
+        st.subheader('Moderna')
         states_trends_moderna_df =  pd.read_csv(states_trends_moderna_dir)
         sns.set(rc={'figure.figsize':(25,8)})
         x = states_trends_moderna_df['State']
@@ -376,8 +376,9 @@ def app():
                 states_trends_moderna_df, states_trends_pfizer_df,
                 states_trends_sinovac_df, states_trends_symptoms_df, states_trends_vaccine_df]
         new_interest_df = df_list[0]
+
         for df_ in df_list[1:]:
-            new_interest_df = new_interest_df.merge(df_, on='State')
+            new_interest_df = new_interest_df.merge(df_, on=['State'])
 
         new_interest_df.set_index('State')
         new_interest_df['Total Interest Score'] = new_interest_df['Total Interest Score'] = new_interest_df.sum(axis=1)
