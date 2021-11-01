@@ -1,0 +1,6 @@
+*.png
+*.pdf
+/screenshots
+/.ipynb_checkpoints
+*.md
+*.ipynb
