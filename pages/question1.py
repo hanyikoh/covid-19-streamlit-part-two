@@ -131,51 +131,78 @@ def app():
         st.table(state_list)
         
     elif chosen == "The admission and discharge flow in PKRC, hospital, ICUand ventilators usage situation of each state":
-        states_tests_df = pd.read_csv(states_tests_dir)
-        after_start_date = states_tests_df["date"] >= start_date
-        before_end_date = states_tests_df["date"] <= end_date
+        distinct14 = sns.color_palette(cc.glasbey, n_colors=14)
+        pkrc_df = pd.read_csv(pkrc_dir)
+        after_start_date = pkrc_df["date"] >= start_date
+        before_end_date = pkrc_df["date"] <= end_date
         between_two_dates = after_start_date & before_end_date
-        states_tests_df = states_tests_df.loc[between_two_dates]
-        
-        st.text('Daily tests (note: not necessarily unique individuals) by type at state level.')
-        st.write('First 5 rows of the dataset')
-        st.table(states_tests_df.head().reset_index(drop=True))
+        pkrc_df = pkrc_df.loc[between_two_dates]
 
-        st.write('Statistical Overview')
-        st.table(states_tests_df.describe())
-
-        st.write("Missing Values Detection")
-        col1, col2 = st.columns(2)
-        null_df=pd.DataFrame({'Column':states_tests_df.isna().sum().index, 'Count of Null Values':states_tests_df.isna().sum().values})  
-        col1.table(null_df)
-        
-        missing_values = states_tests_df.isnull().sum() / len(states_tests_df)
-        missing_values = missing_values[missing_values > 0]
-        missing_values.sort_values(inplace=True)
-        missing_values = missing_values.to_frame()
-        missing_values.columns = ['Count of Missing Values']
-        missing_values.index.names = ['Name']
-        missing_values['Column Name'] = states_tests_df.columns
-
-        sns.set(style="whitegrid", color_codes=True)
-        sns.barplot(x = 'Column Name', y = 'Count of Missing Values', data=missing_values)
-        plt.xticks(rotation = 90)
-        plt.show()
-        col2.pyplot()
-
-        st.write('Outliers detection with Boxplot')
-        fig, axes = plt.subplots(1, 2, figsize=(15, 5), sharey=True)
-        # fig.suptitle('Outliers Visualization')
-        plt.subplots_adjust(left=None, bottom= 0.1, right=None, top=0.5, wspace=0.2, hspace=0.6)
-
-        sns.boxplot(data=states_tests_df, x = states_tests_df["rtk-ag"],ax=axes[0])
-        axes[0].set_title('rtk-ag')
-        sns.boxplot(data=states_tests_df,x = states_tests_df["pcr"],ax=axes[1])
-        axes[1].set_title('pcr')
-
-        st.set_option('deprecation.showPyplotGlobalUse', False)
+        sns.set(rc={'figure.figsize':(25,10)})
+        ax = sns.lineplot('date', 'admitted_covid', ci=None, hue='state', data=pkrc_df, palette = distinct14)
+        ax.set_title('Daily PKRC Admission Flow')
+        ax.set_xlabel('Date')
+        ax.set_ylabel('Number of Individuals Admitted to PKRC')
         st.pyplot()
+        st.text('Based on the line graph of daily PKRC admission flow above, we can see that Sabah, Selangor, Johor, and Pahang have higher number of COVID-19 patients admitted to PKRC than other states over the three months. Sabah has the highest number of admitted patients per day. In general, the patients admission rate of each state fluctuated over the three months but has shown a downward trend and lower rate toward September compared to July.')
 
+        sns.set(rc={'figure.figsize':(25,10)})
+        ax = sns.lineplot('date', 'discharge_covid', ci=None, hue='state', data=pkrc_df, palette = distinct14)
+        ax.set_title('Daily PKRC Discharge Flow')
+        ax.set_xlabel('Date')
+        ax.set_ylabel('Number of Individuals Discharged from PKRC')
+        st.pyplot()
+        st.text('Based on the line graph of daily PKRC discharge flow above, we can see that Selangor, Sabah, Johor, and Pahang have higher number of COVID-19 patients discharged from PKRC than other states over the three months. This may be because they already have more patients. Selangor has the highest number of discharged patients per day. In general, the patients admission rate of each state fluctuated over the three months and has similar pattern to the admission rate.')
+
+        sns.set(rc={'figure.figsize':(25,10)})
+        ax = sns.lineplot('date', 'pkrc_covid', ci=None, hue='state', data=pkrc_df, palette = distinct14)
+        ax.set_title('PKRC Total COVID-19 Patients Flow')
+        ax.set_xlabel('Date')
+        ax.set_ylabel('Number of Individuals in PKRC')
+        st.pyplot()
+        st.text('Based on the line graph of PKRC total COVID-19 patients flow above, we can see that Sarawak, Pahang, Sabah, and Selangor have higher total number of COVID-19 patients PKRC than other states over the three months. Sarawak has the highest total number of COVID-19 patients PKRC per day. In general, the total number of COVID-19 patients of each state fluctuated over the three months except for Perlis, W.P. Labuan, and Kedah.')
+
+        st.title('Hospital')
+        distinct16 = sns.color_palette(cc.glasbey, n_colors=16)
+        hospital_df = pd.read_csv(hospital_dir)
+        after_start_date = hospital_df["date"] >= start_date
+        before_end_date = hospital_df["date"] <= end_date
+        between_two_dates = after_start_date & before_end_date
+        hospital_df = hospital_df.loc[between_two_dates]
+
+        sns.set(rc={'figure.figsize':(25,10)})
+        ax = sns.lineplot('date', 'admitted_covid', ci=None, hue='state', data=hospital_df, palette = distinct16)
+        ax.set_title('Daily Hospital Admission Flow')
+        ax.set_xlabel('Date')
+        ax.set_ylabel('Number of Individuals Admitted to Hospital')
+        st.pyplot()
+        st.text('Based on the line graph of daily hospital admission flow above, we can see that Selangor, Sarawak, and Johor have higher number of COVID-19 patients admitted to hospital than other states over the three months. Selangor has the highest number of admitted patients per day. These 3 states are now declining toward September while other states maintain the steady rate for the daily number of patients admitted.')
+
+        sns.set(rc={'figure.figsize':(25,10)})
+        ax = sns.lineplot('date', 'admitted_covid', ci=None, hue='state', data=hospital_df, palette = distinct16)
+        ax.set_title('Daily Hospital Admission Flow')
+        ax.set_xlabel('Date')
+        ax.set_ylabel('Number of Individuals Admitted to Hospital')
+        st.pyplot()
+        st.text('Based on the line graph of daily hospital admission flow above, we can see that Selangor, Sarawak, and Johor have higher number of COVID-19 patients admitted to hospital than other states over the three months. Selangor has the highest number of admitted patients per day. These 3 states are now declining toward September while other states maintain the steady rate for the daily number of patients admitted.')
+
+        sns.set(rc={'figure.figsize':(25,10)})
+        ax = sns.lineplot('date', 'discharged_covid', ci=None, hue='state', data=hospital_df, palette = distinct16)
+        ax.set_title('Daily Hospital Discharge Flow')
+        ax.set_xlabel('Date')
+        ax.set_ylabel('Number of Individuals Discharged from Hospital')
+        st.pyplot()
+        st.text('Based on the line graph of daily hospital discharge flow above, we can see that Selangor, Sarawak, and Johor have higher number of COVID-19 patients discharged from hospital than other states over the three months. This may be because they already have more patients. Sarawak has the highest number of discharged patients per day. In general, the patients admission rate of each state fluctuated over the three months and has similar pattern to the admission rate.')
+
+        sns.set(rc={'figure.figsize':(25,10)})
+        ax = sns.lineplot('date', 'hosp_covid', ci=None, hue='state', data=hospital_df, palette = distinct16)
+        ax.set_title('Hospital Total COVID-19 Patients Flow')
+        ax.set_xlabel('Date')
+        ax.set_ylabel('Number of Individuals in Hospital')
+        st.pyplot()
+        st.text('Based on the line graph of hospital total COVID-19 patients flow above, we can see that Selangor and Johor have higher total number of COVID-19 patients PKRC than other states over the three months. W.P. Kuala Lumpur has higher total patients until mid of August than other states, and starts to drop visibly toward September. Selangor has the highest total number of COVID-19 patients hospital per day. In general, the total number of COVID-19 patients of each state fluctuated over the three months except for Perlis, W.P. Putrajaya, and W.P. Labuan.')
+
+        
     elif chosen == "The trend for vaccinated and cumulative vaccination reg-istration for each state":
         state_registration_df = pd.read_csv(state_registration_dir)
         state_registration_df_copy = state_registration_df.copy()
