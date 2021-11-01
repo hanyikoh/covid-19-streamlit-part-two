@@ -17,6 +17,7 @@ vaccine_dir = "dataset/vax_state.csv"
 aefi_dir = "dataset/aefi.csv"
 state_registration_dir = "dataset/vax_reg.csv"
 state_vaccination_dir = "dataset/vax_state.csv"
+icu_dir = "dataset/icu.csv"
 
 r_naught_dir = "dataset/r-naught-value - All.csv"
 
@@ -202,7 +203,31 @@ def app():
         st.pyplot()
         st.text('Based on the line graph of hospital total COVID-19 patients flow above, we can see that Selangor and Johor have higher total number of COVID-19 patients PKRC than other states over the three months. W.P. Kuala Lumpur has higher total patients until mid of August than other states, and starts to drop visibly toward September. Selangor has the highest total number of COVID-19 patients hospital per day. In general, the total number of COVID-19 patients of each state fluctuated over the three months except for Perlis, W.P. Putrajaya, and W.P. Labuan.')
 
+        st.title('ICU')
+        icu_df = pd.read_csv(icu_dir)
+        after_start_date = icu_df["date"] >= start_date
+        before_end_date = icu_df["date"] <= end_date
+        between_two_dates = after_start_date & before_end_date
+        icu_df = icu_df.loc[between_two_dates]
+
+        sns.set(rc={'figure.figsize':(25,10)})
+        ax = sns.lineplot('date', 'icu_covid', ci=None, hue='state', data=icu_df, palette = distinct16)
+        ax.set_title('ICU Total COVID-19 Patients Flow')
+        ax.set_xlabel('Date')
+        ax.set_ylabel('Number of Individuals under Intensive Care')
+        st.pyplot()
+        st.text('Based on the line graph of daily ICU total COVID-19 patients flow above, we can see that Selangor has a overwhelming higher number of COVID-19 patients admitted to ICU than other states over the three months. Selangor also has the highest number of admitted patients per day. In general, the total number of ICU COVID-19 patients of all states are now dropping or staying steady toward September except Sabah.')
+
+        sns.set(rc={'figure.figsize':(25,10)})
+        ax = sns.lineplot('date', 'vent_covid', ci=None, hue='state', data=icu_df, palette = distinct16)
+        ax.set_title('ICU Total COVID-19 Patients on Mechanical Ventilation Flow')
+        ax.set_xlabel('Date')
+        ax.set_ylabel('Number of Individuals on Mechanical Ventilation under Intensive Care')
+        st.pyplot()
+        st.text('Based on the line graph of daily ICU total COVID-19 patient on mechanical ventilation flow above, we can see that Selangor and W.P. Kuala Lumpur have higher number of COVID-19 patients needed the ventilator assistance than other states over the three months. Selangor has the highest number of patients on ventilation per day. In general, the patients admission rate of each state fluctuated over the three months and remained steady whereas Selangor and W.P. Kuala Lumpur are now declining toward September.')
+        st.text('In conclusion, according to the graphs above, the states that require more attention are Selangor,Johor, Sabah, W.P. Kuala Lumpus, Sarawak, and Pahang. Although the reasons behind them having more patients may be because they have more population, it is still obvious that they need more attention from government to put in efforts and works to improve the situation.')
         
+
     elif chosen == "The trend for vaccinated and cumulative vaccination reg-istration for each state":
         state_registration_df = pd.read_csv(state_registration_dir)
         state_registration_df_copy = state_registration_df.copy()
