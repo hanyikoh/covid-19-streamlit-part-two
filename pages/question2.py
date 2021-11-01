@@ -13,7 +13,7 @@ from sklearn.cluster import AffinityPropagation
 state_case_dir = "dataset/cases_state.csv"
 start_date = "2021-07-01"
 end_date = "2021-09-30"
-malaysia_vaccination_dir = "dataset/covid19-public-CITF/vaccination/vax_malaysia.csv"
+malaysia_vaccination_dir = "dataset/vax_malaysia.csv"
 malaysia_vaccination_df = pd.read_csv(malaysia_vaccination_dir)
 after_start_date = malaysia_vaccination_df["date"] >= start_date
 before_end_date = malaysia_vaccination_df["date"] <= end_date
@@ -27,7 +27,7 @@ vaccines_type_df['Cansino'] = vaccines_type_df.loc[:, ('cansino')]
 vaccines_type_df = vaccines_type_df[['Pfizer','Sinovac','AstraZeneca','Cansino']]
 vaccines_type_df.reset_index(drop=True, inplace=True)
 vaccines_type_df =(vaccines_type_df-vaccines_type_df.min())/(vaccines_type_df.max()-vaccines_type_df.min())
-malaysia_case_dir = "dataset/covid19-public-MoH/epidemic/cases_malaysia.csv"
+malaysia_case_dir = "dataset/cases_malaysia.csv"
 
 def app():
     sns.set(rc={'figure.figsize':(15,10)})
