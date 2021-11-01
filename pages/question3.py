@@ -5,7 +5,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from IPython.display import display
 from sklearn.ensemble import RandomForestClassifier
-from boruta import BorutaPy
 from sklearn.feature_selection import RFECV
 
 import numpy as np
