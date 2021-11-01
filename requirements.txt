@@ -12,3 +12,4 @@ tqdm==4.62.2
 IPython==7.22.0
 tensorflow==2.6.0
 imblearn==0.0
+imbalanced-learn==0.0
