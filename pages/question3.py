@@ -16,7 +16,7 @@ from sklearn.datasets import make_classification
 from sklearn.feature_selection import RFE
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import MinMaxScaler
-from tqdm import tqdm_notebook, tqdm
+# from tqdm import tqdm_notebook, tqdm
 #tqdm.pandas(tqdm_notebook)
 from imblearn.over_sampling import SMOTE
 from sklearn import metrics
