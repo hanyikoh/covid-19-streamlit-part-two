@@ -15,6 +15,10 @@ hospital_dir = "dataset/hospital.csv"
 deaths_dir = "dataset/deaths_state.csv"
 vaccine_dir = "dataset/vax_state.csv"
 aefi_dir = "dataset/aefi.csv"
+state_registration_dir = "dataset/vax_reg.csv"
+state_vaccination_dir = "dataset/vax_state.csv"
+
+r_naught_dir = "dataset/r-naught-value - All.csv"
 
 def app():
     st.markdown('> Informative Insights from the Datasets')
@@ -173,115 +177,45 @@ def app():
         st.pyplot()
 
     elif chosen == "The trend for vaccinated and cumulative vaccination reg-istration for each state":
-        malaysia_case_df = pd.read_csv(malaysia_case_dir)
-        after_start_date = malaysia_case_df["date"] >= start_date
-        before_end_date = malaysia_case_df["date"] <= end_date
-        between_two_dates = after_start_date & before_end_date
-        malaysia_case_df = malaysia_case_df.loc[between_two_dates]
+        state_registration_df = pd.read_csv(state_registration_dir)
+        state_registration_df_copy = state_registration_df.copy()
+        state_registration_df_copy.drop(state_registration_df_copy.columns.difference(['date','state','total']), 1, inplace=True)
+        state_registration_df_copy['date'] = pd.to_datetime(state_registration_df_copy['date'], format = '%Y-%m-%d')
 
-        st.text('Daily recorded COVID-19 cases at country level.')
-        st.write('First 5 rows of the dataset')
-        st.table(malaysia_case_df.head().reset_index(drop=True))
-
-        st.write('Statistical Overview')
-        st.table(malaysia_case_df.describe())
-
-        st.write("Missing Values Detection")
-        col1, col2 = st.columns(2)
-        null_df=pd.DataFrame({'Column':malaysia_case_df.isna().sum().index, 'Count of Null Values':malaysia_case_df.isna().sum().values})  
-        col1.table(null_df)
-        
-        missing_values = malaysia_case_df.isnull().sum() / len(malaysia_case_df)
-        missing_values = missing_values[missing_values > 0]
-        missing_values.sort_values(inplace=True)
-        missing_values = missing_values.to_frame()
-        missing_values.columns = ['Count of Missing Values']
-        missing_values.index.names = ['Name']
-        missing_values['Column Name'] = malaysia_case_df.columns
-
-        sns.set(style="whitegrid", color_codes=True)
-        sns.barplot(x = 'Column Name', y = 'Count of Missing Values', data=missing_values)
-        plt.xticks(rotation = 90)
-        plt.show()
-        col2.pyplot()
-
-        st.write('Outliers detection with Boxplot')
-        fig, axes = plt.subplots(4, 3, figsize=(15, 5), sharey=True)
-        # fig.suptitle('Outliers Visualization')
-        plt.subplots_adjust(left=None, bottom= 0.1, right=None, top=2, wspace=0.2, hspace=0.6)
-
-        sns.boxplot(data=malaysia_case_df,x=malaysia_case_df["cases_new"],ax=axes[0][0])
-        axes[0][0].set_title('New Case')
-        sns.boxplot(data=malaysia_case_df,x=malaysia_case_df["cases_import"],ax=axes[0][1])
-        axes[0][1].set_title('Case Imprt')
-        sns.boxplot(data=malaysia_case_df,x=malaysia_case_df["cases_recovered"],ax=axes[0][2])
-        axes[0][2].set_title('Case Recovered')
-        sns.boxplot(data=malaysia_case_df,x=malaysia_case_df["cluster_import"],ax=axes[1][0])
-        axes[1][0].set_title('cluster_workplace')
-        sns.boxplot(data=malaysia_case_df,x=malaysia_case_df["cluster_religious"],ax=axes[1][1])
-        axes[1][1].set_title('cluster_religious')
-        sns.boxplot(data=malaysia_case_df,x=malaysia_case_df["cluster_community"],ax=axes[1][2])
-        axes[1][2].set_title('cluster_community')
-        sns.boxplot(data=malaysia_case_df,x=malaysia_case_df["cluster_highRisk"],ax=axes[2][0])
-        axes[2][0].set_title('cluster_highRisk')
-        sns.boxplot(data=malaysia_case_df,x=malaysia_case_df["cluster_education"],ax=axes[2][1])
-        axes[2][1].set_title('cluster_education')
-        sns.boxplot(data=malaysia_case_df,x=malaysia_case_df["cluster_detentionCentre"],ax=axes[2][2])
-        axes[2][2].set_title('cluster_detentionCentre')
-        sns.boxplot(data=malaysia_case_df,x=malaysia_case_df["cluster_workplace"],ax=axes[3][0])
-        axes[3][0].set_title('cluster_workplace')
-        fig.delaxes(axes[3][1])
-        fig.delaxes(axes[3][2])
-        st.set_option('deprecation.showPyplotGlobalUse', False)
+        sns.set(rc={'figure.figsize':(20,8)})
+        sns.set(style='whitegrid')
+        distinct16 = sns.color_palette(cc.glasbey, n_colors=16)
+        sns.lineplot(data=state_registration_df_copy, x="date", y="total", hue="state",palette = distinct16)
         st.pyplot()
+        st.text('From the chart, it can be seen that the selangor has been the top in the population of registered citizens. It might because the people lived in Selangor are having more accurate information about vaccine and more educated.')
+        state_vaccination_df = pd.read_csv(state_vaccination_dir)
+        state_vaccination_df_copy = state_vaccination_df.copy()
+        state_vaccination_df_copy.drop(state_vaccination_df_copy.columns.difference(['date','state','daily']), 1, inplace=True)
+        state_vaccination_df_copy['date'] = pd.to_datetime(state_vaccination_df_copy['date'], format = '%Y-%m-%d')
+
+        sns.set(rc={'figure.figsize':(20,8)})
+        sns.set(style='whitegrid')
+        distinct16 = sns.color_palette(cc.glasbey, n_colors=16)
+        sns.lineplot(data=state_vaccination_df_copy, x="date", y="daily", hue="state",palette = distinct16)
+        st.pyplot()
+        st.text('From the chart, we can see the Selangor had been the top before September in daily new vaccination but there is a sudden drop before entered September. It might be becuase of the government was having several vaccination boost plan in Selangor before September and most of the citizens were fully vaccinated before September. ')
 
     elif chosen == "The trend of R naught index value for each state":
-        malaysia_tests_df = pd.read_csv(malaysia_tests_dir)
-        after_start_date = malaysia_tests_df["date"] >= start_date
-        before_end_date = malaysia_tests_df["date"] <= end_date
+        r_naught_df = pd.read_csv(r_naught_dir)
+        r_naught_df['date'] = pd.to_datetime(r_naught_df['date'], format='%d/%m/%Y')
+        after_start_date = r_naught_df["date"] >= start_date
+        before_end_date = r_naught_df["date"] <= end_date
         between_two_dates = after_start_date & before_end_date
-        malaysia_tests_df = malaysia_tests_df.loc[between_two_dates]
+        r_naught_df = r_naught_df.loc[between_two_dates]
+        r_naught_df = r_naught_df._convert(numeric=True)
+        r_naught_df = r_naught_df.replace(np.nan, 0)
+        r_naught_df['date'] = pd.to_datetime(r_naught_df['date'], format = '%Y-%m-%d')
+        r_naught_df.set_index('date', inplace=True)
 
-        st.text('Daily tests (note: not necessarily unique individuals) by type at country level.')
-        st.write('First 5 rows of the dataset')
-        st.table(malaysia_tests_df.head().reset_index(drop=True))
-
-        st.write('Statistical Overview')
-        st.table(malaysia_tests_df.describe())
-
-        st.write("Missing Values Detection")
-        col1, col2 = st.columns(2)
-        null_df=pd.DataFrame({'Column':malaysia_tests_df.isna().sum().index, 'Count of Null Values':malaysia_tests_df.isna().sum().values})  
-        col1.table(null_df)
-        
-        missing_values = malaysia_tests_df.isnull().sum() / len(malaysia_tests_df)
-        missing_values = missing_values[missing_values > 0]
-        missing_values.sort_values(inplace=True)
-        missing_values = missing_values.to_frame()
-        missing_values.columns = ['Count of Missing Values']
-        missing_values.index.names = ['Name']
-        missing_values['Column Name'] = malaysia_tests_df.columns
-
-        sns.set(style="whitegrid", color_codes=True)
-        sns.barplot(x = 'Column Name', y = 'Count of Missing Values', data=missing_values)
-        plt.xticks(rotation = 90)
-        plt.show()
-        col2.pyplot()
-
-        st.write('Outliers detection with Boxplot')
-        fig, axes = plt.subplots(1, 2, figsize=(15, 5), sharey=True)
-        # fig.suptitle('Outliers Visualization')
-        plt.subplots_adjust(left=None, bottom= 0.1, right=None, top=0.5, wspace=0.2, hspace=0.6)
-
-        sns.boxplot(data=malaysia_tests_df, x = malaysia_tests_df["rtk-ag"],ax=axes[0])
-        axes[0].set_title('rtk-ag')
-
-        sns.boxplot(data=malaysia_tests_df,x = malaysia_tests_df["pcr"],ax=axes[1])
-        axes[1].set_title('pcr')
-    
-        st.set_option('deprecation.showPyplotGlobalUse', False)
+        distinct16 = sns.color_palette(cc.glasbey, n_colors=16)
+        sns.lineplot(data=r_naught_df.drop(columns=['Malaysia']), palette = distinct16)
         st.pyplot()
-
+        st.text('From the chart, it can be seen that the selangor has been the top in the population of registered citizens. It might because the people lived in Selangor are having more accurate information about vaccine and more educated.')
     elif chosen == "The  interest  in  COVID-19  keywords  of  each  state  fromgoogle trends data":
         pkrc_df = pd.read_csv(pkrc_dir)
         after_start_date = pkrc_df["date"] >= start_date
@@ -346,3 +280,6 @@ def app():
         st.pyplot()
 
     st.markdown('In this part, we are trying to explore and generate informative insights from the Malaysia COVID-19 Cases and Vaccination datasets.')
+
+
+    
