@@ -28,7 +28,7 @@ states_trends_pfizer_dir= "dataset/googletrends_states_pfizer.csv"
 states_trends_sinovac_dir= "dataset/googletrends_states_sinovac.csv"
 states_trends_symptoms_dir= "dataset/googletrends_states_symptoms.csv"
 states_trends_vaccine_dir= "dataset/googletrends_states_vaccine.csv"
-states_trends_cansino_df= "dataset/googletrends_states_cansino.csv"
+states_trends_cansino_dir= "dataset/googletrends_states_cansino.csv"
 
 
 def app():
@@ -314,6 +314,17 @@ def app():
         ax.set_ylabel("Interest Score")
         st.pyplot()
 
+        st.subheader('Cansino')
+        states_trends_cansino_df =  pd.read_csv(states_trends_cansino_dir)
+        sns.set(rc={'figure.figsize':(25,8)})
+        x = states_trends_cansino_df['State']
+        y = states_trends_cansino_df['Interest Score']
+        ax = sns.lineplot(x,y)
+        ax.set_title("Malaysia Search Trend of Cansino")
+        ax.set_xlabel("State")
+        ax.set_ylabel("Interest Score")
+        st.pyplot()
+
         st.subheader('Moderna')
         states_trends_moderna_df =  pd.read_csv(states_trends_moderna_dir)
         sns.set(rc={'figure.figsize':(25,8)})
@@ -378,7 +389,7 @@ def app():
         new_interest_df = df_list[0]
 
         for df_ in df_list[1:]:
-            new_interest_df = new_interest_df.merge(df_, on=['State'])
+            new_interest_df = new_interest_df.merge(df_, on='State')
 
         new_interest_df.set_index('State')
         new_interest_df['Total Interest Score'] = new_interest_df['Total Interest Score'] = new_interest_df.sum(axis=1)
