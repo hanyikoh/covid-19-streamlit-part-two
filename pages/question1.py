@@ -39,7 +39,7 @@ def app():
      "The admission and discharge flow in PKRC, hospital, ICUand ventilators usage situation of each state", 
      "The trend for vaccinated and cumulative vaccination reg-istration for each state",
      "The trend of R naught index value for each state",
-     "The  interest  in  COVID-19  keywords  of  each  state  fromgoogle trends data"] )
+     "The  interest  in  COVID-19  keywords  of  each  state  from google trends data"] )
 
     st.markdown(f"__{chosen} :__")
     start_date = "2021-07-01"
