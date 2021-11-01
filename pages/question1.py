@@ -312,6 +312,7 @@ def app():
         ax.set_title("Malaysia Search Trend of AstraZeneca")
         ax.set_xlabel("State")
         ax.set_ylabel("Interest Score")
+        st.pyplot()
 
         st.subheader('Astraneca')
         states_trends_moderna_df =  pd.read_csv(states_trends_moderna_dir)
@@ -322,6 +323,7 @@ def app():
         ax.set_title("Malaysia Search Trend of Moderna")
         ax.set_xlabel("State")
         ax.set_ylabel("Interest Score")
+        st.pyplot()
 
         st.subheader('Pfizer')
         states_trends_pfizer_df =  pd.read_csv(states_trends_pfizer_dir)
@@ -332,6 +334,7 @@ def app():
         ax.set_title("Malaysia Search Trend of Pfizer")
         ax.set_xlabel("State")
         ax.set_ylabel("Interest Score")
+        st.pyplot()
 
         st.subheader('Sinovac')
         states_trends_sinovac_df =  pd.read_csv(states_trends_sinovac_dir)
@@ -342,6 +345,7 @@ def app():
         ax.set_title("Malaysia Search Trend of Sinovac")
         ax.set_xlabel("State")
         ax.set_ylabel("Interest Score")
+        st.pyplot()
 
         st.subheader('Symptoms')
         states_trends_symptoms_df =  pd.read_csv(states_trends_symptoms_dir)
@@ -352,6 +356,7 @@ def app():
         ax.set_title("Malaysia Search Trend of COVID-19 Symptoms")
         ax.set_xlabel("State")
         ax.set_ylabel("Interest Score")
+        st.pyplot()
         st.text('The graph above showed that Johor and Perlis has searched the keyword "Covid Symptoms" the most and the least respectively')
 
         st.subheader('Vaccine')
@@ -363,6 +368,7 @@ def app():
         ax.set_title("Malaysia Search Trend of COVID-19 Vaccine")
         ax.set_xlabel("State")
         ax.set_ylabel("Interest Score")
+        st.pyplot()
         st.text('The graph above showed that Selangor and W.P. Labuan has searched the keyword "COVID-19 Vaccine" the most and the least respectively.')
 
         st.subheader('Total Interest Score by States')
@@ -405,7 +411,7 @@ def app():
         corr = normalized_total_case_interest_df.corr()
         fig, ax = plt.subplots(figsize=(8,8)) 
         sns.heatmap(corr, xticklabels=corr.columns.values, yticklabels=corr.columns.values, cmap='YlGnBu', ax=ax)
-
+        st.pyplot()
         st.text('Based on the graph above and correlation coefficient of 0.6285571402052665, the total cases and total interest score of each state have a moderate positive correlation. The higher the confirmed COVID-19 cases, the higher the interest score where people tend to search more about COVID-19.')
         st.text("In short, this section demonstrated basic exploration and analyzation on google trends data in Malaysia. The search trend of 'coronavirus' and other keywords fluctuated over the one year span (20th Oct 2020 - 20th Oct 2021) due to various reasons. It is noticeable that interest score for 'coronavirus' topped around the May of 2021 because of the pandemic situation started to worsen. The correlation between COVID-19 cases and people's interest towards COVID-19 is moderate positive. People in different states have different interest levels for different keywords, whichever is more related to themselves will be searched more. For example, Sabah topped the 'Cansino' interest score while other states showed lower interest, because Cansino vaccines are mostly available and vaccinated in Sabah. This section demonstrated basic exploration and analyzation on google trends data.")
 
