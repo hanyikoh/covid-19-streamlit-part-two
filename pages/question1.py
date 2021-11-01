@@ -18,9 +18,9 @@ aefi_dir = "dataset/aefi.csv"
 state_registration_dir = "dataset/vax_reg.csv"
 state_vaccination_dir = "dataset/vax_state.csv"
 icu_dir = "dataset/icu.csv"
-
+malaysia_trends_coronavirus_dir = 'dataset/malaysia_trends_coronavirus.csv'
 r_naught_dir = "dataset/r-naught-value - All.csv"
-
+malaysia_trends_vaccine_comparison_dir = "dataset/malaysia_trends_vaccine_comparison.csv"
 def app():
     st.markdown('> Informative Insights from the Datasets')
     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
@@ -226,7 +226,7 @@ def app():
         st.pyplot()
         st.text('Based on the line graph of daily ICU total COVID-19 patient on mechanical ventilation flow above, we can see that Selangor and W.P. Kuala Lumpur have higher number of COVID-19 patients needed the ventilator assistance than other states over the three months. Selangor has the highest number of patients on ventilation per day. In general, the patients admission rate of each state fluctuated over the three months and remained steady whereas Selangor and W.P. Kuala Lumpur are now declining toward September.')
         st.text('In conclusion, according to the graphs above, the states that require more attention are Selangor,Johor, Sabah, W.P. Kuala Lumpus, Sarawak, and Pahang. Although the reasons behind them having more patients may be because they have more population, it is still obvious that they need more attention from government to put in efforts and works to improve the situation.')
-        
+
 
     elif chosen == "The trend for vaccinated and cumulative vaccination reg-istration for each state":
         state_registration_df = pd.read_csv(state_registration_dir)
@@ -268,68 +268,31 @@ def app():
         sns.lineplot(data=r_naught_df.drop(columns=['Malaysia']), palette = distinct16)
         st.pyplot()
         st.text('From the chart, it can be seen that the selangor has been the top in the population of registered citizens. It might because the people lived in Selangor are having more accurate information about vaccine and more educated.')
-    elif chosen == "The  interest  in  COVID-19  keywords  of  each  state  fromgoogle trends data":
-        pkrc_df = pd.read_csv(pkrc_dir)
-        after_start_date = pkrc_df["date"] >= start_date
-        before_end_date = pkrc_df["date"] <= end_date
-        between_two_dates = after_start_date & before_end_date
-        pkrc_df = pkrc_df.loc[between_two_dates]
+    
+    elif chosen == "The  interest  in  COVID-19  keywords  of  each  state  from google trends data":
+        malaysia_trends_coronavirus_df = pd.read_csv(malaysia_trends_coronavirus_dir)
+        malaysia_trends_coronavirus_df['Date'] = pd.to_datetime(malaysia_trends_coronavirus_df['Date'], format='%d/%m/%Y')
 
-        st.text('Flow of patients to/out of Covid-19 Quarantine and Treatment Centres (PKRC), with capacity and utilisation.')
-        st.write('First 5 rows of the dataset')
-        st.table(pkrc_df.head().reset_index(drop=True))
-
-        st.write('Statistical Overview')
-        st.table(pkrc_df.describe())
-
-        st.write("Missing Values Detection")
-        col1, col2 = st.columns(2)
-        null_df=pd.DataFrame({'Column':pkrc_df.isna().sum().index, 'Count of Null Values':pkrc_df.isna().sum().values})  
-        col1.table(null_df)
-        
-        missing_values = pkrc_df.isnull().sum() / len(pkrc_df)
-        missing_values = missing_values[missing_values > 0]
-        missing_values.sort_values(inplace=True)
-        missing_values = missing_values.to_frame()
-        missing_values.columns = ['Count of Missing Values']
-        missing_values.index.names = ['Name']
-        missing_values['Column Name'] = pkrc_df.columns
-
-        sns.set(style="whitegrid", color_codes=True)
-        sns.barplot(x = 'Column Name', y = 'Count of Missing Values', data=missing_values)
-        plt.xticks(rotation = 90)
-        plt.show()
-        col2.pyplot()
-
-        st.write('Outliers detection with Boxplot')
-        fig, axes = plt.subplots(4, 3, figsize=(15, 5), sharey=True)
-        # fig.suptitle('Outliers Visualization')
-        plt.subplots_adjust(left=None, bottom= 0.1, right=None, top=2, wspace=0.2, hspace=0.6)
-
-        sns.boxplot(data=pkrc_df, x = pkrc_df["beds"],ax=axes[0][0])
-        axes[0][0].set_title('beds')
-        sns.boxplot(data=pkrc_df,x = pkrc_df["admitted_pui"],ax=axes[0][1])
-        axes[0][1].set_title('admitted_pui')
-        sns.boxplot(data=pkrc_df, x = pkrc_df["admitted_covid"],ax=axes[0][2])
-        axes[0][2].set_title("admitted_covid")
-        sns.boxplot(data=pkrc_df,x = pkrc_df["admitted_total"],ax=axes[1][0])
-        axes[1][0].set_title('admitted_total')
-        sns.boxplot(data=pkrc_df, x = pkrc_df["discharge_pui"],ax=axes[1][1])
-        axes[1][1].set_title('discharge_pui')
-        sns.boxplot(data=pkrc_df,x = pkrc_df["discharge_covid"],ax=axes[1][2])
-        axes[1][2].set_title('discharge_covid')
-        sns.boxplot(data=pkrc_df, x = pkrc_df["discharge_total"],ax=axes[2][0])
-        axes[2][0].set_title('discharge_total')
-        sns.boxplot(data=pkrc_df,x = pkrc_df["pkrc_covid"],ax=axes[2][1])
-        axes[2][1].set_title('pkrc_covid')
-        sns.boxplot(data=pkrc_df, x = pkrc_df["pkrc_pui"],ax=axes[2][2])
-        axes[2][2].set_title('pkrc_pui')
-        sns.boxplot(data=pkrc_df,x = pkrc_df["pkrc_noncovid"],ax=axes[3][0])
-        axes[3][0].set_title('pkrc_noncovid')
-        fig.delaxes(axes[3][1])
-        fig.delaxes(axes[3][2])
-        st.set_option('deprecation.showPyplotGlobalUse', False)
+        sns.set(rc={'figure.figsize':(15,8)})
+        x = malaysia_trends_coronavirus_df['Date']
+        y = malaysia_trends_coronavirus_df['Interest Score']
+        ax = sns.lineplot(x,y)
+        ax.set_title("Malaysia Search Trend of Coronavirus")
+        ax.set_xlabel("Date")
+        ax.set_ylabel("Interest Score")
         st.pyplot()
+        st.text("Based on the graph above, we can see that the search trend fluctuated over the one year (19th Oct 2020 - 19th Oct 2021), people living in Malaysia searched about 'coronavirus' the most around the May of 2021. It is noticeable that people's interest in coronavirus/COVID-19 will be higher when the confirmed cases are higher because people will like to know the details of the recent situation even more.")
+
+        malaysia_trends_vaccine_comparison_df = pd.read_csv(malaysia_trends_vaccine_comparison_dir)
+        malaysia_trends_vaccine_comparison_df['Date'] = pd.to_datetime(malaysia_trends_vaccine_comparison_df['Date'], format='%d/%m/%Y')
+        
+        melted_df = malaysia_trends_vaccine_comparison_df.melt('Date', var_name='Vaccine Types',  value_name='Interest Score')
+        ax = sns.catplot(ax=ax, x="Date", y="Interest Score", hue='Vaccine Types', data=melted_df, ci=None, kind='point',height=10,aspect=2)
+        ax.fig.suptitle("Malaysia Search Trend of Different Vaccines",fontsize=20, fontdict={"weight": "bold"})
+        st.pyplot()
+        st.text('Based on the graph above, we can see that the overall search trend for 5 types of vaccines: Moderna, Sinovac, AstraZeneca, Cansino, and Pfizer in one year span. We noticed that most poeple were interested in AstraZeneca vaccines, followed by Sinovac vaccines and Pfizer vaccines. There were less interest towards Moderna and Cansino vaccines. This may be due to the different quantities of each type of vaccine imported and used by the Malaysia government.')
+        
+        st.title('Malaysia States Trends')
 
     st.markdown('In this part, we are trying to explore and generate informative insights from the Malaysia COVID-19 Cases and Vaccination datasets.')
 
