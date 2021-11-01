@@ -14,10 +14,8 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.svm import SVR
 from sklearn.linear_model import Lasso
 from sklearn.preprocessing import MinMaxScaler
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.layers import Dropout
+from keras.models import Sequential
+from keras.layers import LSTM,Dense,Dropout
 import colorcet as cc
 
 r_naught_df = pd.read_csv("dataset/r-naught-value - All.csv")
