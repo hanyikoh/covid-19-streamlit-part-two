@@ -18,6 +18,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import Dropout
+import colorcet as cc
 
 r_naught_df = pd.read_csv("dataset/r-naught-value - All.csv")
 malaysia_case_df = pd.read_csv('dataset/cases_malaysia.csv')

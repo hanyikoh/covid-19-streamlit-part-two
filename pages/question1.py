@@ -3,6 +3,7 @@ import pandas as pd
 import streamlit as st
 import seaborn as sns
 import matplotlib.pyplot as plt
+import colorcet as cc
 
 malaysia_case_dir = "dataset/cases_malaysia.csv"
 state_case_dir = "dataset/cases_state.csv"
@@ -18,9 +19,18 @@ aefi_dir = "dataset/aefi.csv"
 state_registration_dir = "dataset/vax_reg.csv"
 state_vaccination_dir = "dataset/vax_state.csv"
 icu_dir = "dataset/icu.csv"
-malaysia_trends_coronavirus_dir = 'dataset/malaysia_trends_coronavirus.csv'
+malaysia_trends_coronavirus_dir = 'dataset/googletrends_malaysia_coronavirus.csv'
 r_naught_dir = "dataset/r-naught-value - All.csv"
-malaysia_trends_vaccine_comparison_dir = "dataset/malaysia_trends_vaccine_comparison.csv"
+malaysia_trends_vaccine_comparison_dir = "dataset/googletrends_malaysia_vaccine_comparison.csv"
+states_trends_astrazeneca_dir = "dataset/googletrends_states_astrazeneca.csv"
+states_trends_moderna_dir= "dataset/googletrends_states_moderna.csv"
+states_trends_pfizer_dir= "dataset/googletrends_states_pfizer.csv"
+states_trends_sinovac_dir= "dataset/googletrends_states_sinovac.csv"
+states_trends_symptoms_dir= "dataset/googletrends_states_symptoms.csv"
+states_trends_vaccine_dir= "dataset/googletrends_states_vaccine.csv"
+states_trends_cansino_df= "dataset/googletrends_states_cansino.csv"
+
+
 def app():
     st.markdown('> Informative Insights from the Datasets')
     st.write('<style>div.row-widget.stRadio > div{flex-direction:row;}</style>', unsafe_allow_html=True)
@@ -291,8 +301,113 @@ def app():
         ax.fig.suptitle("Malaysia Search Trend of Different Vaccines",fontsize=20, fontdict={"weight": "bold"})
         st.pyplot()
         st.text('Based on the graph above, we can see that the overall search trend for 5 types of vaccines: Moderna, Sinovac, AstraZeneca, Cansino, and Pfizer in one year span. We noticed that most poeple were interested in AstraZeneca vaccines, followed by Sinovac vaccines and Pfizer vaccines. There were less interest towards Moderna and Cansino vaccines. This may be due to the different quantities of each type of vaccine imported and used by the Malaysia government.')
-        
+
         st.title('Malaysia States Trends')
+        st.subheader('Astraneca')
+        states_trends_astrazeneca_df =  pd.read_csv(states_trends_astrazeneca_dir)
+        sns.set(rc={'figure.figsize':(25,8)})
+        x = states_trends_astrazeneca_df['State']
+        y = states_trends_astrazeneca_df['Interest Score']
+        ax = sns.lineplot(x,y)
+        ax.set_title("Malaysia Search Trend of AstraZeneca")
+        ax.set_xlabel("State")
+        ax.set_ylabel("Interest Score")
+
+        st.subheader('Astraneca')
+        states_trends_moderna_df =  pd.read_csv(states_trends_moderna_dir)
+        sns.set(rc={'figure.figsize':(25,8)})
+        x = states_trends_moderna_df['State']
+        y = states_trends_moderna_df['Interest Score']
+        ax = sns.lineplot(x,y)
+        ax.set_title("Malaysia Search Trend of Moderna")
+        ax.set_xlabel("State")
+        ax.set_ylabel("Interest Score")
+
+        st.subheader('Pfizer')
+        states_trends_pfizer_df =  pd.read_csv(states_trends_pfizer_dir)
+        sns.set(rc={'figure.figsize':(25,10)})
+        x = states_trends_pfizer_df['State']
+        y = states_trends_pfizer_df['Interest Score']
+        ax = sns.lineplot(x,y)
+        ax.set_title("Malaysia Search Trend of Pfizer")
+        ax.set_xlabel("State")
+        ax.set_ylabel("Interest Score")
+
+        st.subheader('Sinovac')
+        states_trends_sinovac_df =  pd.read_csv(states_trends_sinovac_dir)
+        sns.set(rc={'figure.figsize':(25,10)})
+        x = states_trends_sinovac_df['State']
+        y = states_trends_sinovac_df['Interest Score']
+        ax = sns.lineplot(x,y)
+        ax.set_title("Malaysia Search Trend of Sinovac")
+        ax.set_xlabel("State")
+        ax.set_ylabel("Interest Score")
+
+        st.subheader('Symptoms')
+        states_trends_symptoms_df =  pd.read_csv(states_trends_symptoms_dir)
+        sns.set(rc={'figure.figsize':(25,10)})
+        x = states_trends_symptoms_df['State']
+        y = states_trends_symptoms_df['Interest Score']
+        ax = sns.lineplot(x,y)
+        ax.set_title("Malaysia Search Trend of COVID-19 Symptoms")
+        ax.set_xlabel("State")
+        ax.set_ylabel("Interest Score")
+        st.text('The graph above showed that Johor and Perlis has searched the keyword "Covid Symptoms" the most and the least respectively')
+
+        st.subheader('Vaccine')
+        states_trends_vaccine_df =  pd.read_csv(states_trends_vaccine_dir)
+        sns.set(rc={'figure.figsize':(25,10)})
+        x = states_trends_vaccine_df['State']
+        y = states_trends_vaccine_df['Interest Score']
+        ax = sns.lineplot(x,y)
+        ax.set_title("Malaysia Search Trend of COVID-19 Vaccine")
+        ax.set_xlabel("State")
+        ax.set_ylabel("Interest Score")
+        st.text('The graph above showed that Selangor and W.P. Labuan has searched the keyword "COVID-19 Vaccine" the most and the least respectively.')
+
+        st.subheader('Total Interest Score by States')
+        df_list = [states_trends_astrazeneca_df,states_trends_cansino_df, 
+                states_trends_moderna_df, states_trends_pfizer_df,
+                states_trends_sinovac_df, states_trends_symptoms_df, states_trends_vaccine_df]
+        new_interest_df = df_list[0]
+        for df_ in df_list[1:]:
+            new_interest_df = new_interest_df.merge(df_, on='State')
+
+        new_interest_df.set_index('State')
+        new_interest_df['Total Interest Score'] = new_interest_df['Total Interest Score'] = new_interest_df.sum(axis=1)
+        total_interest_df = new_interest_df[['State','Total Interest Score']]
+
+        st.header('State Cases (MOH)')
+        full_start_date = "2020-10-19"
+        full_end_date = "2021-10-19"
+        full_state_case_df = pd.read_csv(state_case_dir)
+        after_start_date = full_state_case_df["date"] >= full_start_date
+        before_end_date = full_state_case_df["date"] <= full_end_date
+        between_two_dates = after_start_date & before_end_date
+        full_state_case_df = full_state_case_df.loc[between_two_dates]
+        full_state_case_df = full_state_case_df[['state','cases_new']]
+        total_state_case_df = full_state_case_df.groupby(['state'],as_index=False).agg({'cases_new': 'sum'})
+        total_state_case_df = total_state_case_df.rename(columns={'state': 'State', 'cases_new': 'Total Cases'})
+        total_case_interest_df = pd.merge(total_state_case_df, total_interest_df, on=['State','State'])
+        total_case_interest_df = total_case_interest_df.sort_values(by=['Total Cases'],ascending=False)
+
+
+        normalized_total_case_interest_df = total_case_interest_df.copy()
+        normalized_total_case_interest_df['Total Cases'] = normalized_total_case_interest_df['Total Cases'] /normalized_total_case_interest_df['Total Cases'].abs().max()
+        normalized_total_case_interest_df['Total Interest Score'] = normalized_total_case_interest_df['Total Interest Score'] /normalized_total_case_interest_df['Total Interest Score'].abs().max()
+
+        df_melted = normalized_total_case_interest_df.melt("State",var_name="Total Cases & Total Interest Score",value_name="Normalized Data")
+        ax = sns.catplot(ax=ax, x="State", y="Normalized Data", hue="Total Cases & Total Interest Score", data=df_melted, ci=None, kind='point',height=8,aspect=2)
+        ax.fig.suptitle("States: Cases vs Interest Score",fontsize=20, fontdict={"weight": "bold"})
+
+        correlation = normalized_total_case_interest_df['Total Cases'].corr(normalized_total_case_interest_df['Total Interest Score']) 
+        print(correlation)
+        corr = normalized_total_case_interest_df.corr()
+        fig, ax = plt.subplots(figsize=(8,8)) 
+        sns.heatmap(corr, xticklabels=corr.columns.values, yticklabels=corr.columns.values, cmap='YlGnBu', ax=ax)
+
+        st.text('Based on the graph above and correlation coefficient of 0.6285571402052665, the total cases and total interest score of each state have a moderate positive correlation. The higher the confirmed COVID-19 cases, the higher the interest score where people tend to search more about COVID-19.')
+        st.text("In short, this section demonstrated basic exploration and analyzation on google trends data in Malaysia. The search trend of 'coronavirus' and other keywords fluctuated over the one year span (20th Oct 2020 - 20th Oct 2021) due to various reasons. It is noticeable that interest score for 'coronavirus' topped around the May of 2021 because of the pandemic situation started to worsen. The correlation between COVID-19 cases and people's interest towards COVID-19 is moderate positive. People in different states have different interest levels for different keywords, whichever is more related to themselves will be searched more. For example, Sabah topped the 'Cansino' interest score while other states showed lower interest, because Cansino vaccines are mostly available and vaccinated in Sabah. This section demonstrated basic exploration and analyzation on google trends data.")
 
     st.markdown('In this part, we are trying to explore and generate informative insights from the Malaysia COVID-19 Cases and Vaccination datasets.')
 
