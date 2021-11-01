@@ -11,3 +11,4 @@ IPython==7.22.0
 colorcet==2.0.6
 kneed==0.7.0
 keras==2.6.0
+pillow==8.3.2
