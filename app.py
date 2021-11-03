@@ -12,7 +12,7 @@ from pages import question1,question2,question3,question4
 
 # Create an instance of the app 
 app = MultiPage()
-st.set_page_config(layout='wide',page_title='Mooncake\'s Assignment', page_icon='🌕')
+st.set_page_config(layout='wide',page_title='Mooncake\'s Project', page_icon='🌕')
 st.set_option('deprecation.showPyplotGlobalUse', False)
 
 # Import Cases and Testing Dataset
@@ -41,13 +41,19 @@ question_num = st.sidebar.selectbox(
 )
 
 st.sidebar.markdown('__Datasets Used__')
-st.sidebar.markdown('CITF, Rnaught, GoogleTrends and MOH Datasets')
+st.sidebar.markdown('MOH, CITF, R-Naught, and Google Trends Datasets')
 
 st.sidebar.markdown('__Open data on COVID-19 in Malaysia__')
 st.sidebar.markdown('[Ministry of Health (MOH) Malaysia](https://github.com/MoH-Malaysia/covid19-public)')
+st.sidebar.markdown('__Open data on Malaysia\'s National Covid-​19 Immunisation Programme__')
+st.sidebar.markdown('[COVID-19 Immunisation Task Force (CITF) Malaysia](https://github.com/CITF-Malaysia/citf-public)')
+st.sidebar.markdown('__R-Naught Value in Malaysia__')
+st.sidebar.markdown('[COVID-19 Malaysia](https://covid-19.moh.gov.my/kajian-dan-penyelidikan/nilai-r-malaysia)')
+st.sidebar.markdown('__Google Trends in Malaysia__')
+st.sidebar.markdown('[Google Trends](https://github.com/MoH-Malaysia/covid19-public)')
 
 st.sidebar.markdown("""<style>.css-1aumxhk {padding: 10em;}</style>""", unsafe_allow_html=True)
-st.sidebar.markdown('''<small>TDS 3301 Data Mining | Group Assignment </small>''', unsafe_allow_html=True)
+st.sidebar.markdown('''<small>TDS 3301 Data Mining | Group Project </small>''', unsafe_allow_html=True)
 
 # Web App Title
 mmu = Image.open('./mmu_logo.png')
