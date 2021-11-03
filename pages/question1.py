@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from plotly import tools
 import plotly.express as px
+import plotly.subplots as sp
 import colorcet as cc
 
 malaysia_case_dir = "dataset/cases_malaysia.csv"
@@ -79,31 +80,179 @@ def app():
         df3= df.copy()
         df = df.groupby('date').sum()
 
-        sns.set(rc={'figure.figsize':(8,8)})
-        sns.set(style='whitegrid')
-        sns.scatterplot(data=df, x="vaccine", y="cases_new")
-        plt.title('Effects of Vaccination on Daily New Cases')
-        plt.xlabel('Vaccination')
-        plt.ylabel('Daily New Cases')
         st.pyplot()
+        fig1a = px.scatter(df, x="vaccine", y="cases_new",labels={
+                     "vaccine": "Vaccination",
+                     "cases_new": "Daily New Cases",
+                 }, 
+              title='Effects of Vaccination on Daily New Cases')
+        fig1a.show()
+        st.plotly_chart(fig1a, use_container_width=True)
         st.markdown('Overall, vaccination has affected the daily Covid-19 new cases and play its role in Malaysia significantly.')
         st.markdown('Next, we look into each state and see the effetiveness of vaccination.')
-        state = ['Johor', 'Kedah', 'Kelantan', 'Melaka', 'Negeri Sembilan', 'Pahang', 'Perak', 'Perlis', 'Pulau Pinang', 'Sabah', 'Sarawak', 'Selangor', 'Terengganu', 'W.P. Kuala Lumpur', 'W.P. Labuan', 'W.P. Putrajaya']
-        sns.set(rc={'figure.figsize':(8,8)})
-        graph = sns.FacetGrid(df3, row ="state", row_order=state ,hue ="state",height=4, aspect=1)
-        # map the above form facetgrid with some attributes
-        graph.map(plt.scatter, "vaccine", "cases_new", edgecolor ="w").add_legend()
-        # show the object
-        st.pyplot()
+        fig1b = sp.make_subplots(rows=4, cols=4,
+                                subplot_titles=("Johor", "Kedah" ,"Kelantan", "Melaka", 
+                                                "Negeri Sembilan", "Pahang", "Perak", "Perlis", 
+                                                "Pulau Pinang", "Sabah", "Sarawak", "Selangor", 
+                                                "Terengganu", "W.P. Kuala Lumpur", "W.P. Labuan", "W.P. Putrajaya")) 
+
+        dfJohor = pd.DataFrame(df3.loc[df3['state'] == 'Johor'])
+        dfKedah = pd.DataFrame(df3.loc[df3['state'] == 'Kedah'])
+        dfKelantan = pd.DataFrame(df3.loc[df3['state'] == 'Kelantan'])
+        dfMelaka = pd.DataFrame(df3.loc[df3['state'] == 'Melaka'])
+        dfNS = pd.DataFrame(df3.loc[df3['state'] == 'Negeri Sembilan'])
+        dfPahang = pd.DataFrame(df3.loc[df3['state'] == 'Pahang'])
+        dfPerak = pd.DataFrame(df3.loc[df3['state'] == 'Perak'])
+        dfPerlis = pd.DataFrame(df3.loc[df3['state'] == 'Perlis'])
+        dfPP = pd.DataFrame(df3.loc[df3['state'] == 'Pulau Pinang'])
+        dfSabah = pd.DataFrame(df3.loc[df3['state'] == 'Sabah'])
+        dfSarawak = pd.DataFrame(df3.loc[df3['state'] == 'Sarawak'])
+        dfSelangor = pd.DataFrame(df3.loc[df3['state'] == 'Selangor'])
+        dfTerengganu = pd.DataFrame(df3.loc[df3['state'] == 'Terengganu'])
+        dfKL = pd.DataFrame(df3.loc[df3['state'] == 'W.P. Kuala Lumpur'])
+        dfLabuan = pd.DataFrame(df3.loc[df3['state'] == 'W.P. Labuan'])
+        dfPutrajaya = pd.DataFrame(df3.loc[df3['state'] == 'W.P. Putrajaya'])
+
+        figure1 = px.scatter(dfJohor, x="vaccine", y="cases_new",color_discrete_sequence=['red'])
+        figure2 = px.scatter(dfKedah, x='vaccine', y='cases_new',color_discrete_sequence=['fuchsia'])
+        figure3 = px.scatter(dfKelantan, x="vaccine", y="cases_new",color_discrete_sequence=['lime'])
+        figure4 = px.scatter(dfMelaka, x='vaccine', y='cases_new',color_discrete_sequence=['yellow'])
+        figure5 = px.scatter(dfNS, x="vaccine", y="cases_new",color_discrete_sequence=['blue'])
+        figure6 = px.scatter(dfPahang, x='vaccine', y='cases_new',color_discrete_sequence=['aqua'])
+        figure7 = px.scatter(dfPerak, x="vaccine", y="cases_new",color_discrete_sequence=['orange'])
+        figure8 = px.scatter(dfPerlis, x='vaccine', y='cases_new',color_discrete_sequence=['burlywood'])
+        figure9 = px.scatter(dfPP, x="vaccine", y="cases_new",color_discrete_sequence=['brown'])
+        figure10 = px.scatter(dfSabah, x='vaccine', y='cases_new',color_discrete_sequence=['gray'])
+        figure11 = px.scatter(dfSarawak, x="vaccine", y="cases_new",color_discrete_sequence=['darkviolet'])
+        figure12 = px.scatter(dfSelangor, x='vaccine', y='cases_new',color_discrete_sequence=['palegoldenrod'])
+        figure13 = px.scatter(dfTerengganu, x="vaccine", y="cases_new",color_discrete_sequence=['pink'])
+        figure14 = px.scatter(dfKL, x='vaccine', y='cases_new',color_discrete_sequence=['seagreen'])
+        figure15 = px.scatter(dfLabuan, x="vaccine", y="cases_new",color_discrete_sequence=['skyblue'])
+        figure16 = px.scatter(dfPutrajaya, x='vaccine', y='cases_new',color_discrete_sequence=['salmon'])
+
+        figure1_traces = []
+        figure2_traces = []
+        figure3_traces = []
+        figure4_traces = []
+        figure5_traces = []
+        figure6_traces = []
+        figure7_traces = []
+        figure8_traces = []
+        figure9_traces = []
+        figure10_traces = []
+        figure11_traces = []
+        figure12_traces = []
+        figure13_traces = []
+        figure14_traces = []
+        figure15_traces = []
+        figure16_traces = []
+
+        for trace in range(len(figure1["data"])):
+            figure1_traces.append(figure1["data"][trace])
+        for trace in range(len(figure2["data"])):
+            figure2_traces.append(figure2["data"][trace])
+        for trace in range(len(figure3["data"])):
+            figure3_traces.append(figure3["data"][trace])
+        for trace in range(len(figure4["data"])):
+            figure4_traces.append(figure4["data"][trace])
+        for trace in range(len(figure5["data"])):
+            figure5_traces.append(figure5["data"][trace])
+        for trace in range(len(figure6["data"])):
+            figure6_traces.append(figure6["data"][trace])
+        for trace in range(len(figure7["data"])):
+            figure7_traces.append(figure7["data"][trace])
+        for trace in range(len(figure8["data"])):
+            figure8_traces.append(figure8["data"][trace])
+        for trace in range(len(figure9["data"])):
+            figure9_traces.append(figure9["data"][trace])
+        for trace in range(len(figure10["data"])):
+            figure10_traces.append(figure10["data"][trace])
+        for trace in range(len(figure11["data"])):
+            figure11_traces.append(figure11["data"][trace])
+        for trace in range(len(figure12["data"])):
+            figure12_traces.append(figure12["data"][trace])
+        for trace in range(len(figure13["data"])):
+            figure13_traces.append(figure13["data"][trace])
+        for trace in range(len(figure14["data"])):
+            figure14_traces.append(figure14["data"][trace])
+        for trace in range(len(figure15["data"])):
+            figure15_traces.append(figure15["data"][trace])
+        for trace in range(len(figure16["data"])):
+            figure16_traces.append(figure16["data"][trace])
+
+        for traces in figure1_traces:
+            fig1b.append_trace(traces, row=1, col=1)
+        for traces in figure2_traces:
+            fig1b.append_trace(traces, row=1, col=2)
+        for traces in figure3_traces:
+            fig1b.append_trace(traces, row=1, col=3)
+        for traces in figure4_traces:
+            fig1b.append_trace(traces, row=1, col=4)
+        for traces in figure5_traces:
+            fig1b.append_trace(traces, row=2, col=1)
+        for traces in figure6_traces:
+            fig1b.append_trace(traces, row=2, col=2)
+        for traces in figure7_traces:
+            fig1b.append_trace(traces, row=2, col=3)
+        for traces in figure8_traces:
+            fig1b.append_trace(traces, row=2, col=4)
+        for traces in figure9_traces:
+            fig1b.append_trace(traces, row=3, col=1)
+        for traces in figure10_traces:
+            fig1b.append_trace(traces, row=3, col=2)
+        for traces in figure11_traces:
+            fig1b.append_trace(traces, row=3, col=3)
+        for traces in figure12_traces:
+            fig1b.append_trace(traces, row=3, col=4)
+        for traces in figure13_traces:
+            fig1b.append_trace(traces, row=4, col=1)
+        for traces in figure14_traces:
+            fig1b.append_trace(traces, row=4, col=2)
+        for traces in figure15_traces:
+            fig1b.append_trace(traces, row=4, col=3)
+        for traces in figure16_traces:
+            fig1b.append_trace(traces, row=4, col=4)
+        fig1b.update_traces(marker={'size': 4})
+        fig1b.show()
+        st.plotly_chart(fig1b, use_container_width=True)
         st.markdown('In conclusion, the states daily new cases that has been affected a lot by vaccination are Johor, Kedah, Pulau Penang, Sabah, Selangor and W.P. Kuala Lumpur, the states is having a very obvious quick drop after certain point.  The states mentioned are having strong non-linear correlation between vaccination and daily new cases for each state from July until September.  This is probably related to the population density and the r-naught value of the states mentioned above.')
-        affective_state = ['Johor', 'Kedah', 'Pulau Pinang', 'Sabah', 'Selangor', 'W.P. Kuala Lumpur']
-        sns.set(rc={'figure.figsize':(8,8)})
-        graph = sns.FacetGrid(df3, col ="state", col_order=affective_state ,hue ="state",height=4, aspect=1)
-        # map the above form facetgrid with some attributes
-        graph.map(plt.scatter, "vaccine", "cases_new", edgecolor ="w").add_legend()
-        # show the object
-        plt.show()
-        st.pyplot()
+        
+        fig1c = sp.make_subplots(rows=2, cols=3,print_grid=True,
+                        vertical_spacing=0.15,
+                        horizontal_spacing=0.03,
+                        x_title="Vaccination", 
+                        y_title="Daily New Cases",
+                        subplot_titles=("Johor", "Kedah" ,"Pulau Pinang",
+                                        "Sabah", "Selangor", "W.P. Kuala Lumpur")) 
+
+        for trace in range(len(figure1["data"])):
+            figure1_traces.append(figure1["data"][trace])
+        for trace in range(len(figure2["data"])):
+            figure2_traces.append(figure2["data"][trace])
+        for trace in range(len(figure9["data"])):
+            figure9_traces.append(figure9["data"][trace])
+        for trace in range(len(figure10["data"])):
+            figure10_traces.append(figure10["data"][trace])
+        for trace in range(len(figure12["data"])):
+            figure12_traces.append(figure12["data"][trace])
+        for trace in range(len(figure14["data"])):
+            figure14_traces.append(figure14["data"][trace])
+
+        for traces in figure1_traces:
+            fig1c.append_trace(traces, row=1, col=1)
+        for traces in figure2_traces:
+            fig1c.append_trace(traces, row=1, col=2)
+        for traces in figure9_traces:
+            fig1c.append_trace(traces, row=1, col=3)
+        for traces in figure10_traces:
+            fig1c.append_trace(traces, row=2, col=1)
+        for traces in figure12_traces:
+            fig1c.append_trace(traces, row=2, col=2)
+        for traces in figure14_traces:
+            fig1c.append_trace(traces, row=2, col=3)
+        fig1b.update_traces(marker={'size': 4})
+        fig1c.show()
+        st.plotly_chart(fig1c, use_container_width=True)
         
     elif chosen == "Covid-19 Daily New Cases and Daily New Deaths for each State":
         deaths_df = pd.read_csv(deaths_dir)
@@ -245,7 +394,7 @@ def app():
         fig3h = px.line(icu_df, x="date", y="vent_covid", color='state',
               labels={
                      "date": "Date",
-                     "vent_covid": "NNumber of Individuals on Mechanical Ventilation under Intensive Care",
+                     "vent_covid": "Number of Individuals on Mechanical Ventilation under Intensive Care",
                      "state": "State"
                  }, 
               title='ICU Total COVID-19 Patients on Mechanical Ventilation Flow')
