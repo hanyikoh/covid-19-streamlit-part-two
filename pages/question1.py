@@ -450,7 +450,7 @@ def app():
         r_naught_df = r_naught_df._convert(numeric=True)
         r_naught_df = r_naught_df.replace(np.nan, 0)
         r_naught_df['date'] = pd.to_datetime(r_naught_df['date'], format = '%Y-%m-%d')
-        r_naught_df.set_index('date', inplace=True)
+        #r_naught_df.set_index('date', inplace=True)
 
         fig5a = go.Figure()
         fig5a.add_trace(go.Scatter(x=r_naught_df['date'], y=r_naught_df['Selangor'],
@@ -532,44 +532,51 @@ def app():
         st.title('Malaysia States Trends')
         st.subheader('Astraneca')
         states_trends_astrazeneca_df =  pd.read_csv(states_trends_astrazeneca_dir)
-        fig6c = px.line(states_trends_astrazeneca_df, x="State", y="Interest Score",markers=True, title='Malaysia Search Trend of AstraZeneca')
+        fig6c = px.line(states_trends_astrazeneca_df, x="State", y="Interest Score",markers=True, 
+                        color_discrete_sequence=['maroon'], title='Malaysia Search Trend of AstraZeneca')
         fig6c.show()
         st.plotly_chart(fig6c, use_container_width=True)
 
         st.subheader('Cansino')
         states_trends_cansino_df =  pd.read_csv(states_trends_cansino_dir)
-        fig6d = px.line(states_trends_cansino_df, x="State", y="Interest Score", markers=True,title='Malaysia Search Trend of Cansino')
+        fig6d = px.line(states_trends_cansino_df, x="State", y="Interest Score", markers=True,
+                        color_discrete_sequence=['purple'], title='Malaysia Search Trend of Cansino')
         fig6d.show()
         st.plotly_chart(fig6d, use_container_width=True)
 
         st.subheader('Moderna')
         states_trends_moderna_df =  pd.read_csv(states_trends_moderna_dir)
-        fig6e = px.line(states_trends_moderna_df, x="State", y="Interest Score", markers=True,title='Malaysia Search Trend of Moderna')
+        fig6e = px.line(states_trends_moderna_df, x="State", y="Interest Score", markers=True,
+                        color_discrete_sequence=['green'],title='Malaysia Search Trend of Moderna')
         fig6e.show()
         st.plotly_chart(fig6e, use_container_width=True)
 
         st.subheader('Pfizer')
         states_trends_pfizer_df =  pd.read_csv(states_trends_pfizer_dir)
-        fig6f = px.line(states_trends_pfizer_df, x="State", y="Interest Score", markers=True,title='Malaysia Search Trend of Pfizer')
+        fig6f = px.line(states_trends_pfizer_df, x="State", y="Interest Score", markers=True,
+                        color_discrete_sequence=['olive'],title='Malaysia Search Trend of Pfizer')
         fig6f.show()
         st.plotly_chart(fig6f, use_container_width=True)
 
         st.subheader('Sinovac')
         states_trends_sinovac_df =  pd.read_csv(states_trends_sinovac_dir)
-        fig6g = px.line(states_trends_sinovac_df, x="State", y="Interest Score", markers=True,title='Malaysia Search Trend of Sinovac')
+        fig6g = px.line(states_trends_sinovac_df, x="State", y="Interest Score", markers=True,
+                        color_discrete_sequence=['navy'], title='Malaysia Search Trend of Sinovac')
         fig6g.show()
         st.plotly_chart(fig6g, use_container_width=True)
 
         st.subheader('Symptoms')
         states_trends_symptoms_df =  pd.read_csv(states_trends_symptoms_dir)
-        fig6h = px.line(states_trends_symptoms_df, x="State", y="Interest Score", markers=True,title='Malaysia Search Trend of Symptoms')
+        fig6h = px.line(states_trends_symptoms_df, x="State", y="Interest Score", markers=True,
+                        color_discrete_sequence=['chocolate'], title='Malaysia Search Trend of Symptoms')
         fig6h.show()
         st.plotly_chart(fig6h, use_container_width=True)
         st.text('The graph above showed that Johor and Perlis has searched the keyword "Covid Symptoms" the most and the least respectively')
 
         st.subheader('Vaccine')
         states_trends_vaccine_df =  pd.read_csv(states_trends_vaccine_dir)
-        fig6i = px.line(states_trends_vaccine_df, x="State", y="Interest Score", markers=True,title='Malaysia Search Trend of Vaccine')
+        fig6i = px.line(states_trends_vaccine_df, x="State", y="Interest Score", markers=True,
+                        color_discrete_sequence=['deeppink'], title='Malaysia Search Trend of Vaccine')
         fig6i.show()
         st.plotly_chart(fig6i, use_container_width=True)
         st.text('The graph above showed that Selangor and W.P. Labuan has searched the keyword "COVID-19 Vaccine" the most and the least respectively.')
