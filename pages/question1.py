@@ -5,7 +5,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from plotly import tools
-import plotly.offline as py
 import plotly.express as px
 import colorcet as cc
 
@@ -146,7 +145,6 @@ def app():
         st.table(state_list)
         
     elif chosen == "The admission and discharge flow in PKRC, hospital, ICU and ventilators usage situation of each state":
-        distinct14 = sns.color_palette(cc.glasbey, n_colors=14)
         pkrc_df = pd.read_csv(pkrc_dir)
         after_start_date = pkrc_df["date"] >= start_date
         before_end_date = pkrc_df["date"] <= end_date
@@ -187,7 +185,6 @@ def app():
         st.text('Based on the line graph of PKRC total COVID-19 patients flow above, we can see that Sarawak, Pahang, Sabah, and Selangor have higher total number of COVID-19 patients PKRC than other states over the three months. Sarawak has the highest total number of COVID-19 patients PKRC per day. In general, the total number of COVID-19 patients of each state fluctuated over the three months except for Perlis, W.P. Labuan, and Kedah.')
 
         st.title('Hospital')
-        distinct16 = sns.color_palette(cc.glasbey, n_colors=16)
         hospital_df = pd.read_csv(hospital_dir)
         after_start_date = hospital_df["date"] >= start_date
         before_end_date = hospital_df["date"] <= end_date
@@ -304,8 +301,7 @@ def app():
         malaysia_trends_coronavirus_df = pd.read_csv(malaysia_trends_coronavirus_dir)
         malaysia_trends_coronavirus_df['Date'] = pd.to_datetime(malaysia_trends_coronavirus_df['Date'], format='%d/%m/%Y')
 
-        fig6a = px.line(malaysia_trends_coronavirus_df, x="Date", y="Interest Score",
-              title='Malaysia Search Trend of Coronavirus')
+        fig6a = px.line(malaysia_trends_coronavirus_df, x="Date", y="Interest Score", title='Malaysia Search Trend of Coronavirus')
         fig6a.show()
         st.plotly_chart(fig6a, use_container_width=True)
         st.text("Based on the graph above, we can see that the search trend fluctuated over the one year (19th Oct 2020 - 19th Oct 2021), people living in Malaysia searched about 'coronavirus' the most around the May of 2021. It is noticeable that people's interest in coronavirus/COVID-19 will be higher when the confirmed cases are higher because people will like to know the details of the recent situation even more.")
@@ -398,15 +394,17 @@ def app():
         normalized_total_case_interest_df['Total Interest Score'] = normalized_total_case_interest_df['Total Interest Score'] /normalized_total_case_interest_df['Total Interest Score'].abs().max()
 
         df_melted = normalized_total_case_interest_df.melt("State",var_name="Total Cases & Total Interest Score",value_name="Normalized Data")
-        ax = sns.catplot(ax=ax, x="State", y="Normalized Data", hue="Total Cases & Total Interest Score", data=df_melted, ci=None, kind='point',height=8,aspect=2)
-        ax.fig.suptitle("States: Cases vs Interest Score",fontsize=20, fontdict={"weight": "bold"})
+        fig6j = px.line(df_melted, x="State", y="Normalized Data", color='Total Cases & Total Interest Score',markers=True,
+              title='States: Cases vs Interest Score')
+        fig6j.show()
+        st.plotly_chart(fig6j, use_container_width=True)
 
         correlation = normalized_total_case_interest_df['Total Cases'].corr(normalized_total_case_interest_df['Total Interest Score']) 
         print(correlation)
         corr = normalized_total_case_interest_df.corr()
-        fig, ax = plt.subplots(figsize=(8,8)) 
-        sns.heatmap(corr, xticklabels=corr.columns.values, yticklabels=corr.columns.values, cmap='YlGnBu', ax=ax)
-        st.pyplot()
+        fig6k = px.imshow(corr)
+        fig6k.show()
+        st.plotly_chart(fig6k, use_container_width=True)
         st.text('Based on the graph above and correlation coefficient of 0.6285571402052665, the total cases and total interest score of each state have a moderate positive correlation. The higher the confirmed COVID-19 cases, the higher the interest score where people tend to search more about COVID-19.')
         st.text("In short, this section demonstrated basic exploration and analyzation on google trends data in Malaysia. The search trend of 'coronavirus' and other keywords fluctuated over the one year span (19th Oct 2020 - 19th Oct 2021) due to various reasons. It is noticeable that interest score for 'coronavirus' topped around the May of 2021 because of the pandemic situation started to worsen. The correlation between COVID-19 cases and people's interest towards COVID-19 is moderate positive. People in different states have different interest levels for different keywords, whichever is more related to themselves will be searched more. For example, Sabah topped the 'Cansino' interest score while other states showed lower interest, because Cansino vaccines are mostly available and vaccinated in Sabah. This section demonstrated basic exploration and analyzation on google trends data.")
 
