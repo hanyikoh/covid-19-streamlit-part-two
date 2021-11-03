@@ -80,7 +80,6 @@ def app():
         df3= df.copy()
         df = df.groupby('date').sum()
 
-        st.pyplot()
         fig1a = px.scatter(df, x="vaccine", y="cases_new",labels={
                      "vaccine": "Vaccination",
                      "cases_new": "Daily New Cases",
@@ -284,11 +283,19 @@ def app():
         print("Avg Deaths median value: " ,mean.deaths_cases.median())
         print("Avg Daily New Cases median value: " ,mean.cases_new.median())
         
-        sns.set(rc={'figure.figsize':(20,8)})
-        sns.set(style='whitegrid')
-        sns.lineplot(data=mean)
-        plt.title('Average Daily New Cases and New Deaths of each state')
-        st.pyplot()
+        mean_p=mean.reset_index()
+        fig2c = go.Figure()
+        fig2c.add_trace(go.Scatter(x=mean_p['state'], y=mean_p['deaths_cases'],
+                            mode='lines',
+                            name='Deaths Cases'))
+        fig2c.add_trace(go.Scatter(x=mean_p['state'], y=mean_p['cases_new'],
+                            mode='lines',
+                            name='New Cases'))
+        fig2c.update_layout(
+            title="Average Daily New Cases and New Deaths of each state",
+            xaxis_title="State")#, yaxis_title=""
+        fig2c.show()
+        st.plotly_chart(fig2c, use_container_width=True)
         
         state_list = mean.loc[(mean['deaths_cases'] >= 0.019) & (mean['cases_new'] >= 0.09)]
         st.table(state_list)
