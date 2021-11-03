@@ -166,6 +166,7 @@ def app():
                      "state": "State"
                  }, 
               title='Daily PKRC Admission Flow')
+        fig.show()
         st.plotly_chart(fig)
         st.text('Based on the line graph of daily PKRC admission flow above, we can see that Sabah, Selangor, Johor, and Pahang have higher number of COVID-19 patients admitted to PKRC than other states over the three months. Sabah has the highest number of admitted patients per day. In general, the patients admission rate of each state fluctuated over the three months but has shown a downward trend and lower rate toward September compared to July.')
 
@@ -176,6 +177,7 @@ def app():
                      "state": "State"
                  }, 
               title='Daily PKRC Discharge Flow')
+        fig.show()
         st.plotly_chart(fig)
         st.text('Based on the line graph of daily PKRC discharge flow above, we can see that Selangor, Sabah, Johor, and Pahang have higher number of COVID-19 patients discharged from PKRC than other states over the three months. This may be because they already have more patients. Selangor has the highest number of discharged patients per day. In general, the patients admission rate of each state fluctuated over the three months and has similar pattern to the admission rate.')
 
@@ -186,6 +188,7 @@ def app():
                      "state": "State"
                  }, 
               title='PKRC Total COVID-19 Patients Flow')
+        fig.show()
         st.plotly_chart(fig)
         st.text('Based on the line graph of PKRC total COVID-19 patients flow above, we can see that Sarawak, Pahang, Sabah, and Selangor have higher total number of COVID-19 patients PKRC than other states over the three months. Sarawak has the highest total number of COVID-19 patients PKRC per day. In general, the total number of COVID-19 patients of each state fluctuated over the three months except for Perlis, W.P. Labuan, and Kedah.')
 
@@ -204,6 +207,7 @@ def app():
                      "state": "State"
                  }, 
               title='Daily Hospital Admission Flow')
+        fig.show()
         st.plotly_chart(fig)      
         st.text('Based on the line graph of daily hospital admission flow above, we can see that Selangor, Sarawak, and Johor have higher number of COVID-19 patients admitted to hospital than other states over the three months. Selangor has the highest number of admitted patients per day. These 3 states are now declining toward September while other states maintain the steady rate for the daily number of patients admitted.')
 
@@ -214,6 +218,7 @@ def app():
                      "state": "State"
                  }, 
               title='Daily Hospital Discharge Flow')
+        fig.show()
         st.plotly_chart(fig)
         st.text('Based on the line graph of daily hospital discharge flow above, we can see that Selangor, Sarawak, and Johor have higher number of COVID-19 patients discharged from hospital than other states over the three months. This may be because they already have more patients. Sarawak has the highest number of discharged patients per day. In general, the patients admission rate of each state fluctuated over the three months and has similar pattern to the admission rate.')
 
@@ -224,6 +229,7 @@ def app():
                      "state": "State"
                  }, 
               title='Hospital Total COVID-19 Patients Flow')
+        fig.show()
         st.plotly_chart(fig)
         st.text('Based on the line graph of hospital total COVID-19 patients flow above, we can see that Selangor and Johor have higher total number of COVID-19 patients PKRC than other states over the three months. W.P. Kuala Lumpur has higher total patients until mid of August than other states, and starts to drop visibly toward September. Selangor has the highest total number of COVID-19 patients hospital per day. In general, the total number of COVID-19 patients of each state fluctuated over the three months except for Perlis, W.P. Putrajaya, and W.P. Labuan.')
 
@@ -241,6 +247,7 @@ def app():
                      "state": "State"
                  }, 
               title='ICU Total COVID-19 Patients Flow')
+        fig.show()
         st.plotly_chart(fig)
         st.text('Based on the line graph of daily ICU total COVID-19 patients flow above, we can see that Selangor has a overwhelming higher number of COVID-19 patients admitted to ICU than other states over the three months. Selangor also has the highest number of admitted patients per day. In general, the total number of ICU COVID-19 patients of all states are now dropping or staying steady toward September except Sabah.')
 
@@ -251,6 +258,7 @@ def app():
                      "state": "State"
                  }, 
               title='ICU Total COVID-19 Patients on Mechanical Ventilation Flow')
+        fig.show()
         st.plotly_chart(fig)
         st.text('Based on the line graph of daily ICU total COVID-19 patient on mechanical ventilation flow above, we can see that Selangor and W.P. Kuala Lumpur have higher number of COVID-19 patients needed the ventilator assistance than other states over the three months. Selangor has the highest number of patients on ventilation per day. In general, the patients admission rate of each state fluctuated over the three months and remained steady whereas Selangor and W.P. Kuala Lumpur are now declining toward September.')
         st.text('In conclusion, according to the graphs above, the states that require more attention are Selangor,Johor, Sabah, W.P. Kuala Lumpus, Sarawak, and Pahang. Although the reasons behind them having more patients may be because they have more population, it is still obvious that they need more attention from government to put in efforts and works to improve the situation.')
