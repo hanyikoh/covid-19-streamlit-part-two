@@ -153,12 +153,6 @@ def app():
         between_two_dates = after_start_date & before_end_date
         pkrc_df = pkrc_df.loc[between_two_dates]
 
-        #sns.set(rc={'figure.figsize':(25,10)})
-        #ax = sns.lineplot('date', 'admitted_covid', ci=None, hue='state', data=pkrc_df, palette = distinct14)
-        #ax.set_title('Daily PKRC Admission Flow')
-        #ax.set_xlabel('Date')
-        #ax.set_ylabel('Number of Individuals Admitted to PKRC')
-        #st.pyplot()
         fig3a = px.line(pkrc_df, x="date", y="admitted_covid", color='state',
               labels={
                      "date": "Date",
@@ -167,7 +161,7 @@ def app():
                  }, 
               title='Daily PKRC Admission Flow')
         fig3a.show()
-        st.plotly_chart(fig3a)
+        st.plotly_chart(fig3a,use_container_width=True)
         st.text('Based on the line graph of daily PKRC admission flow above, we can see that Sabah, Selangor, Johor, and Pahang have higher number of COVID-19 patients admitted to PKRC than other states over the three months. Sabah has the highest number of admitted patients per day. In general, the patients admission rate of each state fluctuated over the three months but has shown a downward trend and lower rate toward September compared to July.')
 
         fig3b = px.line(pkrc_df, x="date", y="discharge_covid", color='state',
@@ -309,14 +303,9 @@ def app():
         malaysia_trends_coronavirus_df = pd.read_csv(malaysia_trends_coronavirus_dir)
         malaysia_trends_coronavirus_df['Date'] = pd.to_datetime(malaysia_trends_coronavirus_df['Date'], format='%d/%m/%Y')
 
-        sns.set(rc={'figure.figsize':(15,8)})
-        x = malaysia_trends_coronavirus_df['Date']
-        y = malaysia_trends_coronavirus_df['Interest Score']
-        ax = sns.lineplot(x,y)
-        ax.set_title("Malaysia Search Trend of Coronavirus")
-        ax.set_xlabel("Date")
-        ax.set_ylabel("Interest Score")
-        st.pyplot()
+        fig6a = px.line(malaysia_trends_coronavirus_df, x="Date", y="Interest Score",
+              title='Malaysia Search Trend of Coronavirus')
+        st.plotly_chart(fig6a, use_container_width=True)
         st.text("Based on the graph above, we can see that the search trend fluctuated over the one year (19th Oct 2020 - 19th Oct 2021), people living in Malaysia searched about 'coronavirus' the most around the May of 2021. It is noticeable that people's interest in coronavirus/COVID-19 will be higher when the confirmed cases are higher because people will like to know the details of the recent situation even more.")
 
         malaysia_trends_vaccine_comparison_df = pd.read_csv(malaysia_trends_vaccine_comparison_dir)
