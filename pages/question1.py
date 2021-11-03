@@ -7,7 +7,6 @@ import plotly.graph_objects as go
 from plotly import tools
 import plotly.express as px
 import plotly.subplots as sp
-import colorcet as cc
 
 malaysia_case_dir = "dataset/cases_malaysia.csv"
 state_case_dir = "dataset/cases_state.csv"
@@ -20,7 +19,7 @@ hospital_dir = "dataset/hospital.csv"
 deaths_dir = "dataset/deaths_state.csv"
 vaccine_dir = "dataset/vax_state.csv"
 aefi_dir = "dataset/aefi.csv"
-state_registration_dir = "dataset/vax_reg.csv"
+state_registration_dir = "dataset/vaxreg_state.csv"
 state_vaccination_dir = "dataset/vax_state.csv"
 icu_dir = "dataset/icu.csv"
 malaysia_trends_coronavirus_dir = 'dataset/googletrends_malaysia_coronavirus.csv'
@@ -417,22 +416,28 @@ def app():
         state_registration_df_copy.drop(state_registration_df_copy.columns.difference(['date','state','total']), 1, inplace=True)
         state_registration_df_copy['date'] = pd.to_datetime(state_registration_df_copy['date'], format = '%Y-%m-%d')
 
-        sns.set(rc={'figure.figsize':(20,8)})
-        sns.set(style='whitegrid')
-        distinct16 = sns.color_palette(cc.glasbey, n_colors=16)
-        sns.lineplot(data=state_registration_df_copy, x="date", y="total", hue="state",palette = distinct16)
-        st.pyplot()
+        fig4a = px.line(state_registration_df_copy, x="date", y="total", color="state",
+                labels={
+                     "date": "Date",
+                     "total": "Total Vaccination Registrations",
+                 }, 
+              title='Total Vaccination Registrations Per State')
+        fig4a.show()
+        st.plotly_chart(fig4a, use_container_width=True)
         st.text('From the chart, it can be seen that the selangor has been the top in the population of registered citizens. It might because the people lived in Selangor are having more accurate information about vaccine and more educated.')
         state_vaccination_df = pd.read_csv(state_vaccination_dir)
         state_vaccination_df_copy = state_vaccination_df.copy()
         state_vaccination_df_copy.drop(state_vaccination_df_copy.columns.difference(['date','state','daily']), 1, inplace=True)
         state_vaccination_df_copy['date'] = pd.to_datetime(state_vaccination_df_copy['date'], format = '%Y-%m-%d')
 
-        sns.set(rc={'figure.figsize':(20,8)})
-        sns.set(style='whitegrid')
-        distinct16 = sns.color_palette(cc.glasbey, n_colors=16)
-        sns.lineplot(data=state_vaccination_df_copy, x="date", y="daily", hue="state",palette = distinct16)
-        st.pyplot()
+        fig4b = px.line(state_vaccination_df_copy, x="date", y="daily", color="state",
+                labels={
+                     "date": "Date",
+                     "daily": "Daily Vaccinations",
+                 }, 
+              title='Daily Vaccinations Per State')
+        fig4b.show()
+        st.plotly_chart(fig4b, use_container_width=True)
         st.text('From the chart, we can see the Selangor had been the top before September in daily new vaccination but there is a sudden drop before entered September. It might be becuase of the government was having several vaccination boost plan in Selangor before September and most of the citizens were fully vaccinated before September. ')
 
     elif chosen == "The trend of R naught index value for each state":
@@ -447,9 +452,61 @@ def app():
         r_naught_df['date'] = pd.to_datetime(r_naught_df['date'], format = '%Y-%m-%d')
         r_naught_df.set_index('date', inplace=True)
 
-        distinct16 = sns.color_palette(cc.glasbey, n_colors=16)
-        sns.lineplot(data=r_naught_df.drop(columns=['Malaysia']), palette = distinct16)
-        st.pyplot()
+        fig5a = go.Figure()
+        fig5a.add_trace(go.Scatter(x=r_naught_df['date'], y=r_naught_df['Selangor'],
+                                    mode='lines',
+                                    name='Selangor'))
+        fig5a.add_trace(go.Scatter(x=r_naught_df['date'], y=r_naught_df['Sabah'],
+                                    mode='lines',
+                                    name='Sabah'))
+        fig5a.add_trace(go.Scatter(x=r_naught_df['date'], y=r_naught_df['P. Pinang'],
+                                    mode='lines',
+                                    name='Pulau Pinang'))
+        fig5a.add_trace(go.Scatter(x=r_naught_df['date'], y=r_naught_df['Johor'],
+                                    mode='lines',
+                                    name='Johor'))
+        fig5a.add_trace(go.Scatter(x=r_naught_df['date'], y=r_naught_df['Kelantan'],
+                                    mode='lines',
+                                    name='Kelantan'))
+        fig5a.add_trace(go.Scatter(x=r_naught_df['date'], y=r_naught_df['Melaka'],
+                                    mode='lines',
+                                    name='Melaka'))
+        fig5a.add_trace(go.Scatter(x=r_naught_df['date'], y=r_naught_df['WP Kuala Lumpur'],
+                                    mode='lines',
+                                    name='W.P. Kuala Lumpur'))
+        fig5a.add_trace(go.Scatter(x=r_naught_df['date'], y=r_naught_df['WP Labuan'],
+                                    mode='lines',
+                                    name='W.P. Labuan'))
+        fig5a.add_trace(go.Scatter(x=r_naught_df['date'], y=r_naught_df['WP Putrajaya'],
+                                    mode='lines',
+                                    name='W.P. Putrajaya'))
+        fig5a.add_trace(go.Scatter(x=r_naught_df['date'], y=r_naught_df['Negeri Sembilan'],
+                                    mode='lines',
+                                    name='Negeri Sembilan'))
+        fig5a.add_trace(go.Scatter(x=r_naught_df['date'], y=r_naught_df['Kedah'],
+                                    mode='lines',
+                                    name='Kedah'))
+        fig5a.add_trace(go.Scatter(x=r_naught_df['date'], y=r_naught_df['Pahang'],
+                                    mode='lines',
+                                    name='Pahang'))
+        fig5a.add_trace(go.Scatter(x=r_naught_df['date'], y=r_naught_df['Perak'],
+                                    mode='lines',
+                                    name='Perak'))
+        fig5a.add_trace(go.Scatter(x=r_naught_df['date'], y=r_naught_df['Terengganu'],
+                                    mode='lines',
+                                    name='Terengganu'))
+        fig5a.add_trace(go.Scatter(x=r_naught_df['date'], y=r_naught_df['Sarawak'],
+                                    mode='lines',
+                                    name='Sarawak'))
+        fig5a.add_trace(go.Scatter(x=r_naught_df['date'], y=r_naught_df['Perlis'],
+                                    mode='lines',
+                                    name='Perlis'))
+        fig5a.update_layout(
+                    title="Daily R-Naught Values of Each State",
+                    xaxis_title="State", yaxis_title="R-Naught Value")
+
+        fig5a.show()
+        st.plotly_chart(fig5a, use_container_width=True)
         st.text('From the chart, it can be seen that the selangor has been the top in the population of registered citizens. It might because the people lived in Selangor are having more accurate information about vaccine and more educated.')
     
     elif chosen == "The interest in COVID-19 keywords of each state from google trends data":
