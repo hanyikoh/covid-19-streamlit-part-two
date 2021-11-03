@@ -3,6 +3,10 @@ import pandas as pd
 import streamlit as st
 import seaborn as sns
 import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+from plotly import tools
+import plotly.offline as py
+import plotly.express as px
 import colorcet as cc
 
 malaysia_case_dir = "dataset/cases_malaysia.csv"
@@ -149,12 +153,20 @@ def app():
         between_two_dates = after_start_date & before_end_date
         pkrc_df = pkrc_df.loc[between_two_dates]
 
-        sns.set(rc={'figure.figsize':(25,10)})
-        ax = sns.lineplot('date', 'admitted_covid', ci=None, hue='state', data=pkrc_df, palette = distinct14)
-        ax.set_title('Daily PKRC Admission Flow')
-        ax.set_xlabel('Date')
-        ax.set_ylabel('Number of Individuals Admitted to PKRC')
-        st.pyplot()
+        #sns.set(rc={'figure.figsize':(25,10)})
+        #ax = sns.lineplot('date', 'admitted_covid', ci=None, hue='state', data=pkrc_df, palette = distinct14)
+        #ax.set_title('Daily PKRC Admission Flow')
+        #ax.set_xlabel('Date')
+        #ax.set_ylabel('Number of Individuals Admitted to PKRC')
+        fig = px.line(pkrc_df, x="date", y="admitted_covid", color='state',
+              labels={
+                     "date": "Date",
+                     "admitted_covid": "Number of Individuals Admitted to PKRC",
+                     "state": "State"
+                 }, 
+              title='Daily PKRC Admission Flow')
+        fig.show()
+        st.plotly_chart(fig)
         st.text('Based on the line graph of daily PKRC admission flow above, we can see that Sabah, Selangor, Johor, and Pahang have higher number of COVID-19 patients admitted to PKRC than other states over the three months. Sabah has the highest number of admitted patients per day. In general, the patients admission rate of each state fluctuated over the three months but has shown a downward trend and lower rate toward September compared to July.')
 
         sns.set(rc={'figure.figsize':(25,10)})
