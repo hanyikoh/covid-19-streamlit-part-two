@@ -145,7 +145,7 @@ def app():
         state_list = mean.loc[(mean['deaths_cases'] >= 0.019) & (mean['cases_new'] >= 0.09)]
         st.table(state_list)
         
-    elif chosen == "The admission and discharge flow in PKRC, hospital, ICUand ventilators usage situation of each state":
+    elif chosen == "The admission and discharge flow in PKRC, hospital, ICU and ventilators usage situation of each state":
         distinct14 = sns.color_palette(cc.glasbey, n_colors=14)
         pkrc_df = pd.read_csv(pkrc_dir)
         after_start_date = pkrc_df["date"] >= start_date
@@ -158,6 +158,7 @@ def app():
         #ax.set_title('Daily PKRC Admission Flow')
         #ax.set_xlabel('Date')
         #ax.set_ylabel('Number of Individuals Admitted to PKRC')
+        #st.pyplot()
         fig = px.line(pkrc_df, x="date", y="admitted_covid", color='state',
               labels={
                      "date": "Date",
@@ -165,24 +166,27 @@ def app():
                      "state": "State"
                  }, 
               title='Daily PKRC Admission Flow')
-        fig.show()
         st.plotly_chart(fig)
         st.text('Based on the line graph of daily PKRC admission flow above, we can see that Sabah, Selangor, Johor, and Pahang have higher number of COVID-19 patients admitted to PKRC than other states over the three months. Sabah has the highest number of admitted patients per day. In general, the patients admission rate of each state fluctuated over the three months but has shown a downward trend and lower rate toward September compared to July.')
 
-        sns.set(rc={'figure.figsize':(25,10)})
-        ax = sns.lineplot('date', 'discharge_covid', ci=None, hue='state', data=pkrc_df, palette = distinct14)
-        ax.set_title('Daily PKRC Discharge Flow')
-        ax.set_xlabel('Date')
-        ax.set_ylabel('Number of Individuals Discharged from PKRC')
-        st.pyplot()
+        fig = px.line(pkrc_df, x="date", y="discharge_covid", color='state',
+              labels={
+                     "date": "Date",
+                     "discharge_covid": "Number of Individuals Discharged from PKRC",
+                     "state": "State"
+                 }, 
+              title='Daily PKRC Discharge Flow')
+        st.plotly_chart(fig)
         st.text('Based on the line graph of daily PKRC discharge flow above, we can see that Selangor, Sabah, Johor, and Pahang have higher number of COVID-19 patients discharged from PKRC than other states over the three months. This may be because they already have more patients. Selangor has the highest number of discharged patients per day. In general, the patients admission rate of each state fluctuated over the three months and has similar pattern to the admission rate.')
 
-        sns.set(rc={'figure.figsize':(25,10)})
-        ax = sns.lineplot('date', 'pkrc_covid', ci=None, hue='state', data=pkrc_df, palette = distinct14)
-        ax.set_title('PKRC Total COVID-19 Patients Flow')
-        ax.set_xlabel('Date')
-        ax.set_ylabel('Number of Individuals in PKRC')
-        st.pyplot()
+        fig = px.line(pkrc_df, x="date", y="pkrc_covid", color='state',
+              labels={
+                     "date": "Date",
+                     "pkrc_covid": "Number of Individuals in PKRC",
+                     "state": "State"
+                 }, 
+              title='PKRC Total COVID-19 Patients Flow')
+        st.plotly_chart(fig)
         st.text('Based on the line graph of PKRC total COVID-19 patients flow above, we can see that Sarawak, Pahang, Sabah, and Selangor have higher total number of COVID-19 patients PKRC than other states over the three months. Sarawak has the highest total number of COVID-19 patients PKRC per day. In general, the total number of COVID-19 patients of each state fluctuated over the three months except for Perlis, W.P. Labuan, and Kedah.')
 
         st.title('Hospital')
@@ -193,36 +197,34 @@ def app():
         between_two_dates = after_start_date & before_end_date
         hospital_df = hospital_df.loc[between_two_dates]
 
-        sns.set(rc={'figure.figsize':(25,10)})
-        ax = sns.lineplot('date', 'admitted_covid', ci=None, hue='state', data=hospital_df, palette = distinct16)
-        ax.set_title('Daily Hospital Admission Flow')
-        ax.set_xlabel('Date')
-        ax.set_ylabel('Number of Individuals Admitted to Hospital')
-        st.pyplot()
+        fig = px.line(hospital_df, x="date", y="admitted_covid", color='state',
+              labels={
+                     "date": "Date",
+                     "admitted_covid": "Number of Individuals Admitted to Hospital",
+                     "state": "State"
+                 }, 
+              title='Daily Hospital Admission Flow')
+        st.plotly_chart(fig)      
         st.text('Based on the line graph of daily hospital admission flow above, we can see that Selangor, Sarawak, and Johor have higher number of COVID-19 patients admitted to hospital than other states over the three months. Selangor has the highest number of admitted patients per day. These 3 states are now declining toward September while other states maintain the steady rate for the daily number of patients admitted.')
 
-        sns.set(rc={'figure.figsize':(25,10)})
-        ax = sns.lineplot('date', 'admitted_covid', ci=None, hue='state', data=hospital_df, palette = distinct16)
-        ax.set_title('Daily Hospital Admission Flow')
-        ax.set_xlabel('Date')
-        ax.set_ylabel('Number of Individuals Admitted to Hospital')
-        st.pyplot()
-        st.text('Based on the line graph of daily hospital admission flow above, we can see that Selangor, Sarawak, and Johor have higher number of COVID-19 patients admitted to hospital than other states over the three months. Selangor has the highest number of admitted patients per day. These 3 states are now declining toward September while other states maintain the steady rate for the daily number of patients admitted.')
-
-        sns.set(rc={'figure.figsize':(25,10)})
-        ax = sns.lineplot('date', 'discharged_covid', ci=None, hue='state', data=hospital_df, palette = distinct16)
-        ax.set_title('Daily Hospital Discharge Flow')
-        ax.set_xlabel('Date')
-        ax.set_ylabel('Number of Individuals Discharged from Hospital')
-        st.pyplot()
+        fig = px.line(hospital_df, x="date", y="discharged_covid", color='state',
+              labels={
+                     "date": "Date",
+                     "discharged_covid": "Number of Individuals Discharged to Hospital",
+                     "state": "State"
+                 }, 
+              title='Daily Hospital Discharge Flow')
+        st.plotly_chart(fig)
         st.text('Based on the line graph of daily hospital discharge flow above, we can see that Selangor, Sarawak, and Johor have higher number of COVID-19 patients discharged from hospital than other states over the three months. This may be because they already have more patients. Sarawak has the highest number of discharged patients per day. In general, the patients admission rate of each state fluctuated over the three months and has similar pattern to the admission rate.')
 
-        sns.set(rc={'figure.figsize':(25,10)})
-        ax = sns.lineplot('date', 'hosp_covid', ci=None, hue='state', data=hospital_df, palette = distinct16)
-        ax.set_title('Hospital Total COVID-19 Patients Flow')
-        ax.set_xlabel('Date')
-        ax.set_ylabel('Number of Individuals in Hospital')
-        st.pyplot()
+        fig = px.line(hospital_df, x="date", y="hosp_covid", color='state',
+              labels={
+                     "date": "Date",
+                     "hosp_covid": "Number of Individuals in Hospital",
+                     "state": "State"
+                 }, 
+              title='Hospital Total COVID-19 Patients Flow')
+        st.plotly_chart(fig)
         st.text('Based on the line graph of hospital total COVID-19 patients flow above, we can see that Selangor and Johor have higher total number of COVID-19 patients PKRC than other states over the three months. W.P. Kuala Lumpur has higher total patients until mid of August than other states, and starts to drop visibly toward September. Selangor has the highest total number of COVID-19 patients hospital per day. In general, the total number of COVID-19 patients of each state fluctuated over the three months except for Perlis, W.P. Putrajaya, and W.P. Labuan.')
 
         st.title('ICU')
@@ -232,20 +234,24 @@ def app():
         between_two_dates = after_start_date & before_end_date
         icu_df = icu_df.loc[between_two_dates]
 
-        sns.set(rc={'figure.figsize':(25,10)})
-        ax = sns.lineplot('date', 'icu_covid', ci=None, hue='state', data=icu_df, palette = distinct16)
-        ax.set_title('ICU Total COVID-19 Patients Flow')
-        ax.set_xlabel('Date')
-        ax.set_ylabel('Number of Individuals under Intensive Care')
-        st.pyplot()
+        fig = px.line(icu_df, x="date", y="icu_covid", color='state',
+              labels={
+                     "date": "Date",
+                     "icu_covid": "Number of Individuals under Intensive Care",
+                     "state": "State"
+                 }, 
+              title='ICU Total COVID-19 Patients Flow')
+        st.plotly_chart(fig)
         st.text('Based on the line graph of daily ICU total COVID-19 patients flow above, we can see that Selangor has a overwhelming higher number of COVID-19 patients admitted to ICU than other states over the three months. Selangor also has the highest number of admitted patients per day. In general, the total number of ICU COVID-19 patients of all states are now dropping or staying steady toward September except Sabah.')
 
-        sns.set(rc={'figure.figsize':(25,10)})
-        ax = sns.lineplot('date', 'vent_covid', ci=None, hue='state', data=icu_df, palette = distinct16)
-        ax.set_title('ICU Total COVID-19 Patients on Mechanical Ventilation Flow')
-        ax.set_xlabel('Date')
-        ax.set_ylabel('Number of Individuals on Mechanical Ventilation under Intensive Care')
-        st.pyplot()
+        fig = px.line(icu_df, x="date", y="vent_covid", color='state',
+              labels={
+                     "date": "Date",
+                     "vent_covid": "NNumber of Individuals on Mechanical Ventilation under Intensive Care",
+                     "state": "State"
+                 }, 
+              title='ICU Total COVID-19 Patients on Mechanical Ventilation Flow')
+        st.plotly_chart(fig)
         st.text('Based on the line graph of daily ICU total COVID-19 patient on mechanical ventilation flow above, we can see that Selangor and W.P. Kuala Lumpur have higher number of COVID-19 patients needed the ventilator assistance than other states over the three months. Selangor has the highest number of patients on ventilation per day. In general, the patients admission rate of each state fluctuated over the three months and remained steady whereas Selangor and W.P. Kuala Lumpur are now declining toward September.')
         st.text('In conclusion, according to the graphs above, the states that require more attention are Selangor,Johor, Sabah, W.P. Kuala Lumpus, Sarawak, and Pahang. Although the reasons behind them having more patients may be because they have more population, it is still obvious that they need more attention from government to put in efforts and works to improve the situation.')
 
