@@ -172,7 +172,7 @@ def app():
                  }, 
               title='Daily PKRC Discharge Flow')
         fig3b.show()
-        st.plotly_chart(fig3b)
+        st.plotly_chart(fig3b, use_container_width=True)
         st.text('Based on the line graph of daily PKRC discharge flow above, we can see that Selangor, Sabah, Johor, and Pahang have higher number of COVID-19 patients discharged from PKRC than other states over the three months. This may be because they already have more patients. Selangor has the highest number of discharged patients per day. In general, the patients admission rate of each state fluctuated over the three months and has similar pattern to the admission rate.')
 
         fig3c = px.line(pkrc_df, x="date", y="pkrc_covid", color='state',
@@ -183,7 +183,7 @@ def app():
                  }, 
               title='PKRC Total COVID-19 Patients Flow')
         fig3c.show()
-        st.plotly_chart(fig3c)
+        st.plotly_chart(fig3c, use_container_width=True)
         st.text('Based on the line graph of PKRC total COVID-19 patients flow above, we can see that Sarawak, Pahang, Sabah, and Selangor have higher total number of COVID-19 patients PKRC than other states over the three months. Sarawak has the highest total number of COVID-19 patients PKRC per day. In general, the total number of COVID-19 patients of each state fluctuated over the three months except for Perlis, W.P. Labuan, and Kedah.')
 
         st.title('Hospital')
@@ -202,7 +202,7 @@ def app():
                  }, 
               title='Daily Hospital Admission Flow')
         fig3d.show()
-        st.plotly_chart(fig3d)      
+        st.plotly_chart(fig3d, use_container_width=True)      
         st.text('Based on the line graph of daily hospital admission flow above, we can see that Selangor, Sarawak, and Johor have higher number of COVID-19 patients admitted to hospital than other states over the three months. Selangor has the highest number of admitted patients per day. These 3 states are now declining toward September while other states maintain the steady rate for the daily number of patients admitted.')
 
         fig3e = px.line(hospital_df, x="date", y="discharged_covid", color='state',
@@ -213,7 +213,7 @@ def app():
                  }, 
               title='Daily Hospital Discharge Flow')
         fig3e.show()
-        st.plotly_chart(fig3e)
+        st.plotly_chart(fig3e, use_container_width=True)
         st.text('Based on the line graph of daily hospital discharge flow above, we can see that Selangor, Sarawak, and Johor have higher number of COVID-19 patients discharged from hospital than other states over the three months. This may be because they already have more patients. Sarawak has the highest number of discharged patients per day. In general, the patients admission rate of each state fluctuated over the three months and has similar pattern to the admission rate.')
 
         fig3f = px.line(hospital_df, x="date", y="hosp_covid", color='state',
@@ -224,7 +224,7 @@ def app():
                  }, 
               title='Hospital Total COVID-19 Patients Flow')
         fig3f.show()
-        st.plotly_chart(fig3f)
+        st.plotly_chart(fig3f, use_container_width=True)
         st.text('Based on the line graph of hospital total COVID-19 patients flow above, we can see that Selangor and Johor have higher total number of COVID-19 patients PKRC than other states over the three months. W.P. Kuala Lumpur has higher total patients until mid of August than other states, and starts to drop visibly toward September. Selangor has the highest total number of COVID-19 patients hospital per day. In general, the total number of COVID-19 patients of each state fluctuated over the three months except for Perlis, W.P. Putrajaya, and W.P. Labuan.')
 
         st.title('ICU')
@@ -242,7 +242,7 @@ def app():
                  }, 
               title='ICU Total COVID-19 Patients Flow')
         fig3g.show()
-        st.plotly_chart(fig3g)
+        st.plotly_chart(fig3g, use_container_width=True)
         st.text('Based on the line graph of daily ICU total COVID-19 patients flow above, we can see that Selangor has a overwhelming higher number of COVID-19 patients admitted to ICU than other states over the three months. Selangor also has the highest number of admitted patients per day. In general, the total number of ICU COVID-19 patients of all states are now dropping or staying steady toward September except Sabah.')
 
         fig3h = px.line(icu_df, x="date", y="vent_covid", color='state',
@@ -253,7 +253,7 @@ def app():
                  }, 
               title='ICU Total COVID-19 Patients on Mechanical Ventilation Flow')
         fig3h.show()
-        st.plotly_chart(fig3h)
+        st.plotly_chart(fig3h, use_container_width=True)
         st.text('Based on the line graph of daily ICU total COVID-19 patient on mechanical ventilation flow above, we can see that Selangor and W.P. Kuala Lumpur have higher number of COVID-19 patients needed the ventilator assistance than other states over the three months. Selangor has the highest number of patients on ventilation per day. In general, the patients admission rate of each state fluctuated over the three months and remained steady whereas Selangor and W.P. Kuala Lumpur are now declining toward September.')
         st.text('In conclusion, according to the graphs above, the states that require more attention are Selangor,Johor, Sabah, W.P. Kuala Lumpus, Sarawak, and Pahang. Although the reasons behind them having more patients may be because they have more population, it is still obvious that they need more attention from government to put in efforts and works to improve the situation.')
 
@@ -300,11 +300,13 @@ def app():
         st.text('From the chart, it can be seen that the selangor has been the top in the population of registered citizens. It might because the people lived in Selangor are having more accurate information about vaccine and more educated.')
     
     elif chosen == "The  interest  in  COVID-19  keywords  of  each  state  from google trends data":
+        st.title('Malaysia Overall Trends')
         malaysia_trends_coronavirus_df = pd.read_csv(malaysia_trends_coronavirus_dir)
         malaysia_trends_coronavirus_df['Date'] = pd.to_datetime(malaysia_trends_coronavirus_df['Date'], format='%d/%m/%Y')
 
         fig6a = px.line(malaysia_trends_coronavirus_df, x="Date", y="Interest Score",
               title='Malaysia Search Trend of Coronavirus')
+        fig6a.show()
         st.plotly_chart(fig6a, use_container_width=True)
         st.text("Based on the graph above, we can see that the search trend fluctuated over the one year (19th Oct 2020 - 19th Oct 2021), people living in Malaysia searched about 'coronavirus' the most around the May of 2021. It is noticeable that people's interest in coronavirus/COVID-19 will be higher when the confirmed cases are higher because people will like to know the details of the recent situation even more.")
 
@@ -312,33 +314,24 @@ def app():
         malaysia_trends_vaccine_comparison_df['Date'] = pd.to_datetime(malaysia_trends_vaccine_comparison_df['Date'], format='%d/%m/%Y')
         
         melted_df = malaysia_trends_vaccine_comparison_df.melt('Date', var_name='Vaccine Types',  value_name='Interest Score')
-        ax = sns.catplot(ax=ax, x="Date", y="Interest Score", hue='Vaccine Types', data=melted_df, ci=None, kind='point',height=10,aspect=2)
-        ax.fig.suptitle("Malaysia Search Trend of Different Vaccines",fontsize=20, fontdict={"weight": "bold"})
-        st.pyplot()
+        fig6b = px.line(melted_df, x="Date", y="Interest Score", color="Vaccine Types",
+              title='Malaysia Search Trend of Different Vaccines')
+        fig6b.show()
+        st.plotly_chart(fig6b, use_container_width=True)
         st.text('Based on the graph above, we can see that the overall search trend for 5 types of vaccines: Moderna, Sinovac, AstraZeneca, Cansino, and Pfizer in one year span. We noticed that most poeple were interested in AstraZeneca vaccines, followed by Sinovac vaccines and Pfizer vaccines. There were less interest towards Moderna and Cansino vaccines. This may be due to the different quantities of each type of vaccine imported and used by the Malaysia government.')
 
         st.title('Malaysia States Trends')
         st.subheader('Astraneca')
         states_trends_astrazeneca_df =  pd.read_csv(states_trends_astrazeneca_dir)
-        sns.set(rc={'figure.figsize':(25,8)})
-        x = states_trends_astrazeneca_df['State']
-        y = states_trends_astrazeneca_df['Interest Score']
-        ax = sns.lineplot(x,y)
-        ax.set_title("Malaysia Search Trend of AstraZeneca")
-        ax.set_xlabel("State")
-        ax.set_ylabel("Interest Score")
-        st.pyplot()
+        fig6c = px.line(states_trends_astrazeneca_df, x="State", y="Interest Score",markers=True, title='Malaysia Search Trend of AstraZeneca')
+        fig6c.show()
+        st.plotly_chart(fig6c, use_container_width=True)
 
         st.subheader('Cansino')
         states_trends_cansino_df =  pd.read_csv(states_trends_cansino_dir)
-        sns.set(rc={'figure.figsize':(25,8)})
-        x = states_trends_cansino_df['State']
-        y = states_trends_cansino_df['Interest Score']
-        ax = sns.lineplot(x,y)
-        ax.set_title("Malaysia Search Trend of Cansino")
-        ax.set_xlabel("State")
-        ax.set_ylabel("Interest Score")
-        st.pyplot()
+        fig6d = px.line(states_trends_cansino_df, x="State", y="Interest Score", markers=True,title='Malaysia Search Trend of Cansino')
+        fig6d.show()
+        st.plotly_chart(fig6d, use_container_width=True)
 
         st.subheader('Moderna')
         states_trends_moderna_df =  pd.read_csv(states_trends_moderna_dir)
@@ -440,7 +433,7 @@ def app():
         sns.heatmap(corr, xticklabels=corr.columns.values, yticklabels=corr.columns.values, cmap='YlGnBu', ax=ax)
         st.pyplot()
         st.text('Based on the graph above and correlation coefficient of 0.6285571402052665, the total cases and total interest score of each state have a moderate positive correlation. The higher the confirmed COVID-19 cases, the higher the interest score where people tend to search more about COVID-19.')
-        st.text("In short, this section demonstrated basic exploration and analyzation on google trends data in Malaysia. The search trend of 'coronavirus' and other keywords fluctuated over the one year span (20th Oct 2020 - 20th Oct 2021) due to various reasons. It is noticeable that interest score for 'coronavirus' topped around the May of 2021 because of the pandemic situation started to worsen. The correlation between COVID-19 cases and people's interest towards COVID-19 is moderate positive. People in different states have different interest levels for different keywords, whichever is more related to themselves will be searched more. For example, Sabah topped the 'Cansino' interest score while other states showed lower interest, because Cansino vaccines are mostly available and vaccinated in Sabah. This section demonstrated basic exploration and analyzation on google trends data.")
+        st.text("In short, this section demonstrated basic exploration and analyzation on google trends data in Malaysia. The search trend of 'coronavirus' and other keywords fluctuated over the one year span (19th Oct 2020 - 19th Oct 2021) due to various reasons. It is noticeable that interest score for 'coronavirus' topped around the May of 2021 because of the pandemic situation started to worsen. The correlation between COVID-19 cases and people's interest towards COVID-19 is moderate positive. People in different states have different interest levels for different keywords, whichever is more related to themselves will be searched more. For example, Sabah topped the 'Cansino' interest score while other states showed lower interest, because Cansino vaccines are mostly available and vaccinated in Sabah. This section demonstrated basic exploration and analyzation on google trends data.")
 
     st.markdown('In this part, we are trying to explore and generate informative insights from the Malaysia COVID-19 Cases and Vaccination datasets.')
 
