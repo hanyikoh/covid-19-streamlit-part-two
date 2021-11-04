@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import streamlit as st
-#import seaborn as sns
+import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler 
 from kneed import KneeLocator, DataGenerator as dg
@@ -44,6 +44,7 @@ vaccines_date_df['Cansino'] = vaccines_type_df['Cansino'].values
 
 def app():
     st.title('K-Means Clustering')
+
     fig1 = go.Figure()
     fig1.add_trace(go.Scatter(x=vaccines_date_df['date'], y=vaccines_date_df['Pfizer'],
                             mode='markers', name='Pfizer'))
@@ -57,9 +58,6 @@ def app():
     fig1.show()
     st.plotly_chart(fig1, use_container_width=True)
 
-    ss = StandardScaler()
-    X = ss.fit_transform(vaccines_type_df)
-
     distortions = []
     K = range(1,10)
     for k in K:
@@ -72,7 +70,7 @@ def app():
 
     df = pd.DataFrame({'Clusters': K, 'Distortions': distortions})
     fig2 = (px.line(df, x='Clusters', y='Distortions', template='seaborn')).update_traces(mode='lines+markers')
-    fig2.add_vline(x=kn.knee, line_width=3, line_dash="dash", line_color="green")
+    fig2.add_vline(x=kn.knee, line_width=2, line_dash="dash", line_color="green")
     fig2.update_layout(title="The Elbow Method Showing The Optimal K")
     fig2.show()
     st.plotly_chart(fig2, use_container_width=True)

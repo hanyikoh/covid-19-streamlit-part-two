@@ -608,7 +608,6 @@ def app():
         total_case_interest_df = pd.merge(total_state_case_df, total_interest_df, on=['State','State'])
         total_case_interest_df = total_case_interest_df.sort_values(by=['Total Cases'],ascending=False)
 
-
         normalized_total_case_interest_df = total_case_interest_df.copy()
         normalized_total_case_interest_df['Total Cases'] = normalized_total_case_interest_df['Total Cases'] /normalized_total_case_interest_df['Total Cases'].abs().max()
         normalized_total_case_interest_df['Total Interest Score'] = normalized_total_case_interest_df['Total Interest Score'] /normalized_total_case_interest_df['Total Interest Score'].abs().max()
