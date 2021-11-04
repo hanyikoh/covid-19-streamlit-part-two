@@ -67,17 +67,16 @@ def app():
  
     x, y = dg.convex_decreasing()
     kn = KneeLocator(x, y, curve='convex', direction='decreasing')
-    print('Optimal k: ',kn.knee)
 
     df = pd.DataFrame({'Clusters': K, 'Distortions': distortions})
     fig2 = (px.line(df, x='Clusters', y='Distortions', template='seaborn')).update_traces(mode='lines+markers')
-    fig2.add_vline(x=kn.knee, line_width=2, line_dash="dash", line_color="green")
+    fig2.add_vline(x=kn.knee, line_width=3, line_dash="dash", line_color="green")
     fig2.update_layout(title="The Elbow Method Showing The Optimal K")
     fig2.show()
     st.plotly_chart(fig2, use_container_width=True)
     
     kmeans = KMeans(n_clusters=2, init='random')
-    kmeans = kmeans.fit_predict(vaccines_type_df)
+    label = kmeans.fit_predict(vaccines_type_df)
     vaccines_type_df['cluster_group'] = kmeans.labels_
     vaccines_type_df['Date'] = vaccines_date_df['date'].values
     figa = px.scatter(vaccines_type_df, x='Date', y='Pfizer', color='cluster_group')
