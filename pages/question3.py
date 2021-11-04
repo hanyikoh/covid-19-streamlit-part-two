@@ -88,7 +88,7 @@ def app():
         selected_col = ['d1_site_pain', 'd1_site_swelling','d1_joint_pain','d1_weakness', 'd1_fever','d1_vomiting','d1_rash', 'd2_site_pain', 'd2_site_swelling', 'd2_site_redness', 'd2_tiredness', 'd2_headache', 'd2_weakness','d2_fever', 'd2_chills']
         st.markdown("#### Class Balancing - SMOTE")
         
-        col1,col2 = st.beta_columns(2)
+        col1,col2 = st.columns(2)
         with col1:
             pd.value_counts(vax_df['vaxtype']).plot.bar()
             plt.title('Vaccine types histogram Before SMOTE')
