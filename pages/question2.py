@@ -35,6 +35,7 @@ vaccines_type_df['Cansino'] = vaccines_type_df.loc[:, ('cansino')]
 vaccines_type_df = vaccines_type_df[['Pfizer','Sinovac','AstraZeneca','Cansino']]
 vaccines_type_df.reset_index(drop=True, inplace=True)
 vaccines_type_df =(vaccines_type_df-vaccines_type_df.min())/(vaccines_type_df.max()-vaccines_type_df.min())
+
 vaccines_date_df = malaysia_vaccination_df[['date']]
 vaccines_date_df['Pfizer'] = vaccines_type_df['Pfizer'].values
 vaccines_date_df['Sinovac'] = vaccines_type_df['Sinovac'].values
