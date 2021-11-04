@@ -42,6 +42,7 @@ vaccines_date_df['AstraZeneca'] = vaccines_type_df['AstraZeneca'].values
 vaccines_date_df['Cansino'] = vaccines_type_df['Cansino'].values
 
 def app():
+    st.title('K-Means Clustering')
     fig1 = go.Figure()
     fig1.add_trace(go.Scatter(x=vaccines_date_df['date'], y=vaccines_date_df['Pfizer'],
                             mode='markers', name='Pfizer'))
@@ -74,6 +75,7 @@ def app():
     fig2.update_layout(title="The Elbow Method Showing The Optimal K")
     fig2.show()
     st.plotly_chart(fig2, use_container_width=True)
+    st.markdown('The optimal K suggested is 2, so we set the number of cluster to 2 for K-means clustering.')
     
     kmeans = KMeans(n_clusters=2, init='random')
     label = kmeans.fit_predict(vaccines_type_df)
@@ -87,7 +89,9 @@ def app():
     fig3.update_layout(xaxis_title="Date")
     fig3.show()
     st.plotly_chart(fig3, use_container_width=True)
-      
+    
+    st.markdown('By applying the K-means clustering algorithm, the four types of vaccines with different total doses over the 3 months are classified into two groups.\nOne group is the group with higher total doses, another group is the lower total doses group. We can observe that there are some vaccines having lower total doses compared to other vaccines, although it is already September 2021.\nThis could be indicating a supply and demand problem for specific type of vaccine. The reasons behind it could be the differences in the vaccines\' popularity and publicity effect. \nFor example, there were more people talking good about Pfizer and the government recently used Pfizer the most for vaccination whereas AstraZeneca was said to be more likely to cause side effects and blood clots, so less people wanted to take it.')
+    st.title('Affinity Propagation')
     cumm_vacc = malaysia_vaccination_df[['date','cumul']]
     daily_case = malaysia_case_df[['date','cases_new']]
     daily_cumvacc_df = pd.merge(cumm_vacc, daily_case, on=['date','date'])
