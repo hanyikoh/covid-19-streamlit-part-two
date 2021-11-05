@@ -1,3 +1,4 @@
+from re import U
 import numpy as np
 import pandas as pd
 import streamlit as st
@@ -6,12 +7,9 @@ import matplotlib.pyplot as plt
 from IPython.display import display
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.feature_selection import RFECV
-
-import numpy as np
-import pandas as pd
-
-from matplotlib import pyplot as plt
-import seaborn as sns
+import plotly.graph_objects as go
+import plotly.offline as py
+import plotly.express as px
 from sklearn.datasets import make_classification
 from sklearn.feature_selection import RFE
 from sklearn.tree import DecisionTreeClassifier
@@ -88,25 +86,27 @@ def app():
         selected_col = ['d1_site_pain', 'd1_site_swelling','d1_joint_pain','d1_weakness', 'd1_fever','d1_vomiting','d1_rash', 'd2_site_pain', 'd2_site_swelling', 'd2_site_redness', 'd2_tiredness', 'd2_headache', 'd2_weakness','d2_fever', 'd2_chills']
         st.markdown("#### Class Balancing - SMOTE")
         
+        df = pd.DataFrame(vax_df['vaxtype'].value_counts())
+        df = df.reset_index()
+
         col1,col2 = st.columns(2)
         with col1:
-            pd.value_counts(vax_df['vaxtype']).plot.bar()
-            plt.title('Vaccine types histogram Before SMOTE')
-            plt.xlabel('Vaccine Type')
-            plt.ylabel('Frequency')
-            st.pyplot()
+            fig2 = px.bar(df, x='index', y='vaxtype')
+            fig2.update_layout(title='Vaccine Types Histogram', xaxis_title='Vaccine Type', yaxis_title='Frequency')
+            fig2.show()
+            st.plotly_chart(fig2, use_container_width=True)
         X = np.array(vax_df[selected_col])
         y = np.array(vax_df.loc[:, vax_df.columns == 'vaxtype'])
         sm = SMOTE(random_state=2)
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0)
         X_train_res, y_train_res = sm.fit_resample(X_train, y_train.ravel())
+        df2 = pd.DataFrame(pd.value_counts(y_train_res))
+        df2 = df2.reset_index()
         with col2:
-            pd.value_counts(y_train_res).plot.bar()
-            plt.title('Vaccine types histogram After SMOTE')
-            plt.xlabel('Vaccine Type')
-            plt.ylabel('Frequency')
-            st.pyplot()
-        
+            fig3 = px.bar(df2, x='index', y=0)
+            fig3.update_layout(title='Vaccine Types Histogram', xaxis_title='Vaccine Type', yaxis_title='Frequency')
+            fig3.show()
+            st.plotly_chart(fig3, use_container_width=True)
 
         st.markdown("#### Clssification Model - Logistic Regression")
         logreg = LogisticRegression() #solver best 'S' curve
@@ -163,11 +163,15 @@ def app():
         table = result.head()
         st.table(table)
         cm = confusion_matrix(y_test, y_pred)
-        plt.figure(figsize=(8, 6))
-        plt.title('Confusion Matrix (with SMOTE)', size=16)
-        sns.heatmap(cm, annot=True, cmap='Blues')
-        st.pyplot()
-        
+        #plt.figure(figsize=(8, 6))
+        #plt.title('Confusion Matrix (with SMOTE)', size=16)
+        #sns.heatmap(cm, annot=True, cmap='Blues')
+        #st.pyplot()
+        fig4 = px.imshow(cm)
+        fig4.update_layout(title = 'Confusion Matrix (with SMOTE)')
+        fig4.show()
+        st.plotly_chart(fig4, use_container_width=True)
+                
         st.markdown('##### Precision= {:.2f}'.format(precision_score(y_test, y_pred, average="weighted")))
         st.markdown('##### Recall= {:.2f}'. format(recall_score(y_test, y_pred, average="weighted")))
         st.markdown('##### F1= {:.2f}'. format(f1_score(y_test, y_pred, average="weighted")))
