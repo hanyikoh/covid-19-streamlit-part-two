@@ -18,6 +18,10 @@ from sklearn.preprocessing import MinMaxScaler
 # from keras.layers import LSTM,Dense,Dropout
 from PIL import Image
 import colorcet as cc
+import plotly.graph_objects as go
+from plotly import tools
+import plotly.express as px
+import plotly.subplots as sp
 
 r_naught_df = pd.read_csv("dataset/r-naught-value - All.csv")
 malaysia_case_df = pd.read_csv('dataset/cases_malaysia.csv')
@@ -156,6 +160,20 @@ def app():
     # plt.show()
     # st.pyplot()
 
+    #real_values1 = pd.DataFrame(real_values1)
+    #real_values1 = real_values1.reset_index()
+    #predicted_values1 = pd.DataFrame(predicted_values1)
+    #predicted_values1 = predicted_values1.reset_index()
+
+    image = Image.open('./new case trend prediction.png')
+    st.image(image, caption='/new case trends prediction',use_column_width=True)
+    #fig1 = go.Figure()
+    #fig1.add_trace(go.Scatter(x=real_values1['index'], y=real_values1[0], mode='lines', name='Real New Case Value'))
+    #fig1.add_trace(go.Scatter(x=predicted_values1['index'], y=predicted_values1[0], mode='lines', name='Predicted New Case Value'))
+    #fig1.update_layout(title="Malaysia New Case Prediction", xaxis_title="Time", yaxis_title="New Case Number")
+    #fig1.show()
+    #st.plotly_chart(fig1, use_container_width=True)
+
     # training_set = malaysia_death_df.iloc[:-30, 1:2].values
     # predicted_values, real_values = Run_LSTM(training_set,malaysia_death_df, False)
     # plt.plot(real_values, color = 'red', label = 'Real New Deaths Value')
@@ -169,8 +187,16 @@ def app():
     # plt.show()
     # st.pyplot()
 
-    image = Image.open('./new case trend prediction.png')
-    st.image(image, caption='/new case trends prediction',use_column_width=True)
+    #real_values2 = pd.DataFrame(real_values2)
+    #real_values2 = real_values2.reset_index()
+    #predicted_values2 = pd.DataFrame(predicted_values2)
+    #predicted_values2 = predicted_values2.reset_index()
 
     image = Image.open('./new deaths trend prediction.png')
     st.image(image, caption='/new deaths trends prediction',use_column_width=True)
+    #fig2 = go.Figure()
+    #fig2.add_trace(go.Scatter(x=real_values2['index'], y=real_values2[0], mode='lines', name='Real New Case Value'))
+    #fig2.add_trace(go.Scatter(x=predicted_values2['index'], y=predicted_values2[0], mode='lines', name='Predicted New Case Value'))
+    #fig2.update_layout( title="Malaysia New Case Prediction", xaxis_title="Time", yaxis_title="New Case Number")
+    #fig2.show()
+    #st.plotly_chart(fig2, use_container_width=True)
