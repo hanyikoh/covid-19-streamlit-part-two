@@ -19,7 +19,8 @@ from sklearn.preprocessing import MinMaxScaler
 from imblearn.over_sampling import SMOTE
 from sklearn import metrics
 from sklearn.metrics import r2_score,median_absolute_error,mean_squared_error,mean_absolute_error
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score,confusion_matrix        
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score,confusion_matrix  
+from sklearn.metrics import roc_curve, auc      
 from sklearn.linear_model import LogisticRegression
 from sklearn import metrics
 from sklearn.model_selection import train_test_split
@@ -61,7 +62,7 @@ def app():
     if selected_metrics == "Classify Vaccine Type":
         st.markdown("### Classify Vaccine Type based on Vaccine Side-Effects")
         st.markdown("#### Feature Selection - Recursive Feature Elimination (RFE) ")
-        st.markdown("After using different methods, we decide to use Recursive Feature Elimination (RFE) to select the most useful feature. Feature selection can reduce overfitting, increase the model's accuracy and reduce training time. ")
+        st.markdown("After using different methods, we decide to use Recursive Feature Elimination (RFE) to select the most useful feature. Feature selection can reduce overfitting, increase the model's accuracy and reduce training time. RFE known as wrapper feature selection method, which is easy to implement and good for classification accuracy.")
         st.markdown('Recursive Feature Elimination (RFE) works by searching for a subset of features in the training dataset, starting with all of them and successfully removing them until the desired number remains. This is accomplished by re-fitting the model using the given machine learning algorithm, ranking features by importance, discarding the least important features, and fitting the model again. This procedure is repeated until only a certain number of features are left.')
         X = vax_df.drop(["vaxtype"], 1)
         colnames = X.columns
@@ -78,10 +79,13 @@ def app():
         #fig, ax = plt.subplots(figsize=(5,5)) 
         
         sns.set(style='whitegrid')
-        sns_rfe_plot = sns.catplot(x="Score", y="Features", data = rfe_score[:], kind = "bar", 
-                    height=10, aspect=.7, palette='rocket')
+        sns_rfe_plot = sns.catplot(x="Score", y="Features", data = rfe_score[:], kind = "bar",  orientation='horizontal',
+                    height=10, aspect=.7, palette='Purples_r')
         plt.title("RFE Features Ranking")
+        plt.xlabel('FEATURE IMPORTANCE')
+        plt.ylabel('FEATURE NAMES')
         st.pyplot()
+        
         
         selected_col = ['d1_site_pain', 'd1_site_swelling','d1_joint_pain','d1_weakness', 'd1_fever','d1_vomiting','d1_rash', 'd2_site_pain', 'd2_site_swelling', 'd2_site_redness', 'd2_tiredness', 'd2_headache', 'd2_weakness','d2_fever', 'd2_chills']
         st.markdown("#### Class Balancing - SMOTE")
@@ -116,13 +120,33 @@ def app():
         result = pd.DataFrame(X_test,columns = selected_col)
         result['y_test'] = y_test.ravel()
         result['y_pred'] = y_pred
+
         table = result.head()
         st.table(table)
-        st.markdown('##### Precision= {:.2f}'.format(precision_score(y_test, y_pred, average="weighted")))
-        st.markdown('##### Recall= {:.2f}'. format(recall_score(y_test, y_pred, average="weighted")))
-        st.markdown('##### F1= {:.2f}'. format(f1_score(y_test, y_pred, average="weighted")))
-        st.markdown('##### Accuracy= {:.2f}'. format(accuracy_score(y_test, y_pred)))
-        
+        st.markdown('### Evaluation Metrics for Classifier\n')
+        cm = confusion_matrix(y_test, y_pred)
+        cm = pd.DataFrame(cm,
+                     index = ['Pfizer','Sinovac','Astrazeneca'], 
+                     columns =  ['Pfizer','Sinovac','Astrazeneca'])
+        plt.figure(figsize=(8, 6))
+        plt.title('Confusion Matrix (with SMOTE)', size=16)
+        sns.heatmap(cm, annot=True, cmap='Blues')
+
+        plt.ylabel('Actual Values')
+        plt.xlabel('Predicted Values')
+        st.pyplot()
+        #fig1 = px.bar(rfe_score[:], x="Score", y="Features", orientation='h', color_continuous_scale='Rainbow')
+        #fig1.update_layout(title='RFE Features Ranking')
+        #st.plotly_chart(fig1)
+        result = pd.DataFrame({'Evaluation Metrics':['Precision','Recall','F1 Score', 'Accuracy'],
+                   'Score':[precision_score(y_test, y_pred, average="weighted"),recall_score(y_test, y_pred, average="weighted"),f1_score(y_test, y_pred, average="weighted"),accuracy_score(y_test, y_pred)]})
+        result = result.set_index('Evaluation Metrics')
+        st.table(result)
+        # st.markdown('##### Precision= {:.2f}'.format(precision_score(y_test, y_pred, average="weighted")))
+        # st.markdown('##### Recall= {:.2f}'. format(recall_score(y_test, y_pred, average="weighted")))
+        # st.markdown('##### F1= {:.2f}'. format(f1_score(y_test, y_pred, average="weighted")))
+        # st.markdown('##### Accuracy= {:.2f}'. format(accuracy_score(y_test, y_pred)))
+
     elif selected_metrics == "Classify R-naught Level":
         start_date = "2021-07-01"
         end_date = "2021-09-30"
@@ -153,7 +177,7 @@ def app():
 
         X_sm, y_sm = sm.fit_resample(X, y)
         X_train, X_test, y_train, y_test = train_test_split(X_sm, y_sm, test_size=0.3, random_state=1)
-        clf = DecisionTreeClassifier(criterion="entropy", max_depth=5, splitter='random') #pruning the tree by setting the depth
+        clf = DecisionTreeClassifier(criterion="entropy", max_depth=5, splitter='best') #pruning the tree by setting the depth
         clf = clf.fit(X_train,y_train)
         y_pred = clf.predict(X_test)
         result = pd.DataFrame()
@@ -161,18 +185,30 @@ def app():
         result['y_test'] = y_test.ravel()
         result['y_pred'] = y_pred
         table = result.head()
+        
+        st.markdown('### Classification Model - Decision Tree Classifier')
         st.table(table)
+        st.markdown('### Evaluation Metrics for Classifier')
         cm = confusion_matrix(y_test, y_pred)
+        cm = pd.DataFrame(cm,
+                index = ['Low','Medium','High'], 
+                columns =  ['Low','Medium','High'])
         plt.figure(figsize=(8, 6))
         plt.title('Confusion Matrix (with SMOTE)', size=16)
-        sns.heatmap(cm, annot=True, cmap='Blues')
+        
+        sns.heatmap(cm, annot=True, cmap='Purples')
+        plt.ylabel('Actual Values')
+        plt.xlabel('Predicted Values')
         st.pyplot()
-        fig4 = px.imshow(cm)
-        fig4.update_layout(title = 'Confusion Matrix (with SMOTE)')
-        fig4.show()
-        st.plotly_chart(fig4, use_container_width=True)
-                
-        st.markdown('##### Precision= {:.2f}'.format(precision_score(y_test, y_pred, average="weighted")))
-        st.markdown('##### Recall= {:.2f}'. format(recall_score(y_test, y_pred, average="weighted")))
-        st.markdown('##### F1= {:.2f}'. format(f1_score(y_test, y_pred, average="weighted")))
-        st.markdown('##### Accuracy= {:.2f}'. format(accuracy_score(y_test, y_pred)))
+        #fig4 = px.imshow(cm)
+        #fig4.update_layout(title = 'Confusion Matrix (with SMOTE)')
+        #fig4.show()
+        #st.plotly_chart(fig4, use_container_width=True)
+        result = pd.DataFrame({'Evaluation Metrics':['Precision','Recall','F1 Score', 'Accuracy'],
+            'Score':[precision_score(y_test, y_pred, average="weighted"),recall_score(y_test, y_pred, average="weighted"),f1_score(y_test, y_pred, average="weighted"),accuracy_score(y_test, y_pred)]})
+        result = result.set_index('Evaluation Metrics')
+        st.table(result)
+        # st.markdown('##### Precision= {:.2f}'.format(precision_score(y_test, y_pred, average="weighted")))
+        # st.markdown('##### Recall= {:.2f}'. format(recall_score(y_test, y_pred, average="weighted")))
+        # st.markdown('##### F1= {:.2f}'. format(f1_score(y_test, y_pred, average="weighted")))
+        # st.markdown('##### Accuracy= {:.2f}'. format(accuracy_score(y_test, y_pred)))
