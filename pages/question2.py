@@ -13,6 +13,7 @@ import plotly.express as px
 
 start_date = "2021-07-01"
 end_date = "2021-09-30"
+
 malaysia_vaccination_dir = "dataset/vax_malaysia.csv"
 malaysia_vaccination_df = pd.read_csv(malaysia_vaccination_dir)
 after_start_date = malaysia_vaccination_df["date"] >= start_date
@@ -27,7 +28,7 @@ before_end_date = malaysia_case_df["date"] <= end_date
 between_two_dates = after_start_date & before_end_date
 malaysia_case_df = malaysia_case_df.loc[between_two_dates]
 
-vaccines_type_df = malaysia_vaccination_df[['date','pfizer1','pfizer2','sinovac1','sinovac2','astra1','astra2','cansino']]
+vaccines_type_df = malaysia_vaccination_df[['pfizer1','pfizer2','sinovac1','sinovac2','astra1','astra2','cansino']]
 vaccines_type_df['Pfizer'] = vaccines_type_df.loc[:, ('pfizer1', 'pfizer2')].sum(axis=1)
 vaccines_type_df['Sinovac'] = vaccines_type_df.loc[:, ('sinovac1','sinovac2')].sum(axis=1)
 vaccines_type_df['AstraZeneca'] = vaccines_type_df.loc[:, ('astra1','astra2')].sum(axis=1)
