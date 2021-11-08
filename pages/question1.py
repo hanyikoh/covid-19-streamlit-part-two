@@ -7,6 +7,9 @@ import plotly.graph_objects as go
 from plotly import tools
 import plotly.express as px
 import plotly.subplots as sp
+# import geojson as gp
+# import folium
+# from streamlit_folium import folium_static
 
 malaysia_case_dir = "dataset/cases_malaysia.csv"
 state_case_dir = "dataset/cases_state.csv"
@@ -32,7 +35,7 @@ states_trends_sinovac_dir= "dataset/googletrends_states_sinovac.csv"
 states_trends_symptoms_dir= "dataset/googletrends_states_symptoms.csv"
 states_trends_vaccine_dir= "dataset/googletrends_states_vaccine.csv"
 states_trends_cansino_dir= "dataset/googletrends_states_cansino.csv"
-
+population_dir = "dataset/population.csv"
 
 def app():
     st.markdown('> Informative Insights from the Datasets')
@@ -415,8 +418,16 @@ def app():
         state_registration_df_copy = state_registration_df.copy()
         state_registration_df_copy.drop(state_registration_df_copy.columns.difference(['date','state','total']), 1, inplace=True)
         state_registration_df_copy['date'] = pd.to_datetime(state_registration_df_copy['date'], format = '%Y-%m-%d')
+        
+        population_df = pd.read_csv(population_dir)
 
-        fig4a = px.line(state_registration_df_copy, x="date", y="total", color="state",
+        population_df.drop(population_df.columns.difference(['state','pop']), 1, inplace=True)
+        merged_df =  pd.merge(state_registration_df, population_df, on='state')
+        merged_df['rate'] = merged_df['total'] / merged_df['pop']
+        merged_df.drop(merged_df.columns.difference(['date','state','total','rate']), 1, inplace=True)
+        merged_df['date'] = pd.to_datetime(merged_df['date'], format = '%Y-%m-%d')
+
+        fig4a = px.line(merged_df, x="date", y="total", color="state",
                 labels={
                      "date": "Date",
                      "total": "Total Vaccination Registrations",
@@ -424,7 +435,20 @@ def app():
               title='Total Vaccination Registrations Per State')
         fig4a.show()
         st.plotly_chart(fig4a, use_container_width=True)
-        st.text('From the chart, it can be seen that the selangor has been the top in the population of registered citizens. It might because the people lived in Selangor are having more accurate information about vaccine and more educated.')
+        st.markdown('From the chart, it can be seen that the selangor has been the top in the population of registered citizens. It might because the people lived in Selangor are having more accurate information about vaccine and more educated.')
+
+        fig4a1 = px.line(merged_df, x="date", y="rate", color="state",
+                labels={
+                     "date": "Date",
+                     "rate": "Total Vaccination Registration's Rate",
+                 }, 
+              title='Total Vaccination Registrations Rate Per State')
+        fig4a1.show()
+        st.plotly_chart(fig4a1, use_container_width=True)
+        st.markdown('From the chart, it can be seen that the Kuala Lumpur has been the top in the rate of population of registered citizens. And in contrast, Sabah has been in the bottom, it might be because the citizens in Sabah are having transportation issue to get to the vaccination center and difficult to receive the correct information about vaccination.')
+
+
+
         state_vaccination_df = pd.read_csv(state_vaccination_dir)
         state_vaccination_df_copy = state_vaccination_df.copy()
         state_vaccination_df_copy.drop(state_vaccination_df_copy.columns.difference(['date','state','daily']), 1, inplace=True)
@@ -438,7 +462,7 @@ def app():
               title='Daily Vaccinations Per State')
         fig4b.show()
         st.plotly_chart(fig4b, use_container_width=True)
-        st.text('From the chart, we can see the Selangor had been the top before September in daily new vaccination but there is a sudden drop before entered September. It might be becuase of the government was having several vaccination boost plan in Selangor before September and most of the citizens were fully vaccinated before September. ')
+        st.markdown('From the chart, we can see the Selangor had been the top before September in daily new vaccination but there is a sudden drop before entered September. It might be becuase of the government was having several vaccination boost plan in Selangor before September and most of the citizens were fully vaccinated before September. ')
 
     elif chosen == "The trend of R naught index value for each state":
         r_naught_df = pd.read_csv(r_naught_dir)
@@ -507,8 +531,64 @@ def app():
 
         fig5a.show()
         st.plotly_chart(fig5a, use_container_width=True)
-        st.text('From the chart, it can be seen that the selangor has been the top in the population of registered citizens. It might because the people lived in Selangor are having more accurate information about vaccine and more educated.')
-    
+        st.markdown('From the chart, it can be seen that the selangor has been the top in the population of registered citizens. It might because the people lived in Selangor are having more accurate information about vaccine and more educated.')
+        #Create figure object
+        # import urllib.request, json 
+        # with urllib.request.urlopen("https://gist.githubusercontent.com/heiswayi/81a169ab39dcf749c31a/raw/b2b3685f5205aee7c35f0b543201907660fac55e/malaysia.geojson") as url:
+        #     malaysia_geo = geojson.load(url)
+        # #     print(data)
+        # with open('./msia-states.json') as f:
+        #     malaysia_geo = geojson.load(f)
+        # Dataset = pd.DataFrame({"City/County":['Johor'],'Population':[3213214]})
+        # fig = go.Figure(
+        #     go.Choroplethmapbox(
+        #         geojson = malaysia_geo, #Assign geojson file
+        #         featureidkey = "properties.name_1", #Assign feature key
+        #         locations = Dataset["City/County"], #Assign location data
+        #         z = Dataset["Population"], #Assign information data
+        #         zauto = True,
+        #         colorscale = 'viridis',
+        #         showscale = True,
+        #     )
+        # )
+
+        #Update layout
+        # fig.update_layout(
+        #     mapbox_style = "carto-positron", #Decide a style for the map
+        #     mapbox_zoom = 6, #Zoom in scale
+        #     mapbox_center = {"lat": 4.2105, "lon": 101.9758}, #Center location of the map
+        # )
+        # fig.show()
+        # st.plotly_chart(fig, use_container_width=True)
+
+        # jsonl = f"masia-states.json"
+        # m = folium.Map(location=[4.2105,101.9758], titles = 'Covid 19 Regsitration', name="Light Map", zoom_start=5, attr="My data attribution")
+        # df_map = gp.read_file(f"masia-states.json")
+        # states = folium.Choropleth(
+        #     geo_data = df_map,
+        #     data = df_map,
+        #     key_on = "feature.properties.name_1",
+        #     columns=['name_1', 'Cases'],
+        #     fill_color="YlOrRd",
+        #     fill_opacity=0.7,
+        #     line_opacity=0.5,
+        #     legend_name="Cases",
+        #     reset=True
+        # ).add_to(m)
+
+        # states.geojson.add_child(
+        #     folium.features.GeoJsonTooltip(fields=['name_1','Cases'], aliases=['State: ','Cases: '])
+        # )
+
+        # folium_static(m)
+        # make_map_responsive="""
+        # <style>
+        # [title~="st.iframe"]{width:100%}
+        # </style>
+        # """
+        # st.markdown(make_map_responsive, unsafe_allow_html=True)
+
+
     elif chosen == "The interest in COVID-19 keywords of each state from google trends data":
         st.title('Malaysia Overall Trends')
         malaysia_trends_coronavirus_df = pd.read_csv(malaysia_trends_coronavirus_dir)
