@@ -531,7 +531,7 @@ def app():
 
         fig5a.show()
         st.plotly_chart(fig5a, use_container_width=True)
-        st.markdown('From the chart, it can be seen that the selangor has been the top in the population of registered citizens. It might because the people lived in Selangor are having more accurate information about vaccine and more educated.')
+        st.markdown('From the chart, we can find that the RNaught Value of two states fluctuates wildly. They are Perlis and W.P Labuan. For Perlis, we suspect the high RNaught Value is because of the high density of population as the area of the state is the smallest in Malaysia. For Labuan, we guess the high registration rate helps prevent the spread of Covid-19 as Labuan is one of the states with the highest vaccination rate in the early covid period.')
         #Create figure object
         # import urllib.request, json 
         # with urllib.request.urlopen("https://gist.githubusercontent.com/heiswayi/81a169ab39dcf749c31a/raw/b2b3685f5205aee7c35f0b543201907660fac55e/malaysia.geojson") as url:

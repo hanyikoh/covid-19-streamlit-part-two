@@ -92,9 +92,12 @@ def app():
     model_list = ['Linear Regression','Decision Tree Regression', 'Lasso Regression', 'SVR Regression', 'Random Forest Regression']
     d = {'Regression Algorithm':model_list,'MAE': mae_list, 'MSE': mse_list, 'R2':r2_list}
     st.table(pd.DataFrame(data=d))
+    st.markdown("Among all the algorithms that have been tested, the random forest regression performed the best on the task. We think the factor contribute to this is because our data has a non-linear trend and the extrapolation outside the training data is not significant to the prediction. As SVM, Lasso and Linear regression take data extrapolation into account, which may be the cause that make their prediction not as accurate as Random Forest.")
 
 
     st.markdown("#### Regression Algorithm to Predict The Trend of R Naught Index")
+    st.markdown("As predicting the R-Naught Index will be helpful to ")
+
     image = Image.open('./new case trend prediction.png')
     st.image(image, caption='/new case trends prediction',use_column_width=True)
     image = Image.open('./new deaths trend prediction.png')
