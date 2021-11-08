@@ -11,39 +11,39 @@ import plotly.graph_objects as go
 import plotly.offline as py
 import plotly.express as px
 
-start_date = "2021-07-01"
-end_date = "2021-09-30"
-
-malaysia_vaccination_dir = "dataset/vax_malaysia.csv"
-malaysia_vaccination_df = pd.read_csv(malaysia_vaccination_dir)
-after_start_date = malaysia_vaccination_df["date"] >= start_date
-before_end_date = malaysia_vaccination_df["date"] <= end_date
-between_two_dates = after_start_date & before_end_date
-malaysia_vaccination_df = malaysia_vaccination_df.loc[between_two_dates]
-
-malaysia_case_dir = "dataset/cases_malaysia.csv"
-malaysia_case_df = pd.read_csv(malaysia_case_dir)
-after_start_date = malaysia_case_df["date"] >= start_date
-before_end_date = malaysia_case_df["date"] <= end_date
-between_two_dates = after_start_date & before_end_date
-malaysia_case_df = malaysia_case_df.loc[between_two_dates]
-
-vaccines_type_df = malaysia_vaccination_df[['pfizer1','pfizer2','sinovac1','sinovac2','astra1','astra2','cansino']]
-vaccines_type_df['Pfizer'] = vaccines_type_df.loc[:, ('pfizer1', 'pfizer2')].sum(axis=1)
-vaccines_type_df['Sinovac'] = vaccines_type_df.loc[:, ('sinovac1','sinovac2')].sum(axis=1)
-vaccines_type_df['AstraZeneca'] = vaccines_type_df.loc[:, ('astra1','astra2')].sum(axis=1)
-vaccines_type_df['Cansino'] = vaccines_type_df.loc[:, ('cansino')]
-vaccines_type_df = vaccines_type_df[['Pfizer','Sinovac','AstraZeneca','Cansino']]
-vaccines_type_df.reset_index(drop=True, inplace=True)
-vaccines_type_df =(vaccines_type_df-vaccines_type_df.min())/(vaccines_type_df.max()-vaccines_type_df.min())
-
-vaccines_date_df = malaysia_vaccination_df[['date']]
-vaccines_date_df['Pfizer'] = vaccines_type_df['Pfizer'].values
-vaccines_date_df['Sinovac'] = vaccines_type_df['Sinovac'].values
-vaccines_date_df['AstraZeneca'] = vaccines_type_df['AstraZeneca'].values
-vaccines_date_df['Cansino'] = vaccines_type_df['Cansino'].values
-
 def app():
+    start_date = "2021-07-01"
+    end_date = "2021-09-30"
+
+    malaysia_vaccination_dir = "dataset/vax_malaysia.csv"
+    malaysia_vaccination_df = pd.read_csv(malaysia_vaccination_dir)
+    after_start_date = malaysia_vaccination_df["date"] >= start_date
+    before_end_date = malaysia_vaccination_df["date"] <= end_date
+    between_two_dates = after_start_date & before_end_date
+    malaysia_vaccination_df = malaysia_vaccination_df.loc[between_two_dates]
+
+    malaysia_case_dir = "dataset/cases_malaysia.csv"
+    malaysia_case_df = pd.read_csv(malaysia_case_dir)
+    after_start_date = malaysia_case_df["date"] >= start_date
+    before_end_date = malaysia_case_df["date"] <= end_date
+    between_two_dates = after_start_date & before_end_date
+    malaysia_case_df = malaysia_case_df.loc[between_two_dates]
+
+    vaccines_type_df = malaysia_vaccination_df[['pfizer1','pfizer2','sinovac1','sinovac2','astra1','astra2','cansino']]
+    vaccines_type_df['Pfizer'] = vaccines_type_df.loc[:, ('pfizer1', 'pfizer2')].sum(axis=1)
+    vaccines_type_df['Sinovac'] = vaccines_type_df.loc[:, ('sinovac1','sinovac2')].sum(axis=1)
+    vaccines_type_df['AstraZeneca'] = vaccines_type_df.loc[:, ('astra1','astra2')].sum(axis=1)
+    vaccines_type_df['Cansino'] = vaccines_type_df.loc[:, ('cansino')]
+    vaccines_type_df = vaccines_type_df[['Pfizer','Sinovac','AstraZeneca','Cansino']]
+    vaccines_type_df.reset_index(drop=True, inplace=True)
+    vaccines_type_df =(vaccines_type_df-vaccines_type_df.min())/(vaccines_type_df.max()-vaccines_type_df.min())
+
+    vaccines_date_df = malaysia_vaccination_df[['date']]
+    vaccines_date_df['Pfizer'] = vaccines_type_df['Pfizer'].values
+    vaccines_date_df['Sinovac'] = vaccines_type_df['Sinovac'].values
+    vaccines_date_df['AstraZeneca'] = vaccines_type_df['AstraZeneca'].values
+    vaccines_date_df['Cansino'] = vaccines_type_df['Cansino'].values
+
     st.title('K-Means Clustering')
 
     fig1 = go.Figure()
