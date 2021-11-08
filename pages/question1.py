@@ -645,7 +645,7 @@ def app():
         fig6g.show()
         st.plotly_chart(fig6g, use_container_width=True)
 
-        st.subheader('Symptoms')
+        st.subheader('Covid-19 Symptoms')
         states_trends_symptoms_df =  pd.read_csv(states_trends_symptoms_dir)
         fig6h = px.line(states_trends_symptoms_df, x="State", y="Interest Score", markers=True,
                         color_discrete_sequence=['chocolate'], title='Malaysia Search Trend of Symptoms')
@@ -653,7 +653,7 @@ def app():
         st.plotly_chart(fig6h, use_container_width=True)
         st.text('The graph above showed that Johor and Perlis has searched the keyword "Covid Symptoms" the most and the least respectively')
 
-        st.subheader('Vaccine')
+        st.subheader('Covid-19 Vaccine')
         states_trends_vaccine_df =  pd.read_csv(states_trends_vaccine_dir)
         fig6i = px.line(states_trends_vaccine_df, x="State", y="Interest Score", markers=True,
                         color_discrete_sequence=['deeppink'], title='Malaysia Search Trend of Vaccine')
@@ -674,7 +674,7 @@ def app():
         new_interest_df['Total Interest Score'] = new_interest_df['Total Interest Score'] = new_interest_df.sum(axis=1)
         total_interest_df = new_interest_df[['State','Total Interest Score']]
 
-        st.header('State Cases (MOH)')
+        st.header('State Cases')
         full_start_date = "2020-10-19"
         full_end_date = "2021-10-19"
         full_state_case_df = pd.read_csv(state_case_dir)
