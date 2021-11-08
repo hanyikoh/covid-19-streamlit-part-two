@@ -96,9 +96,8 @@ def app():
 
 
     st.markdown("#### Regression Algorithm to Predict The Trend of R Naught Index")
-    st.markdown("As predicting the R-Naught Index will be helpful to ")
-
     image = Image.open('./new case trend prediction.png')
     st.image(image, caption='/new case trends prediction',use_column_width=True)
     image = Image.open('./new deaths trend prediction.png')
     st.image(image, caption='/new deaths trends prediction',use_column_width=True)
+    st.markdown("As a result, the predicted future trend of cases and deaths will be descreasing which is tally with our actual trend.")

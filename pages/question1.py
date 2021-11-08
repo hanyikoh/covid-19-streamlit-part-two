@@ -85,12 +85,14 @@ def app():
         fig1a = px.scatter(df, x="vaccine", y="cases_new",labels={
                      "vaccine": "Vaccination",
                      "cases_new": "Daily New Cases",
-                 }, 
+                 },
               title='Effects of Vaccination on Daily New Cases')
+
         fig1a.show()
         st.plotly_chart(fig1a, use_container_width=True)
         st.markdown('Overall, vaccination has affected the daily Covid-19 new cases and play its role in Malaysia significantly.')
         st.markdown('Next, we look into each state and see the effetiveness of vaccination.')
+
         fig1b = sp.make_subplots(rows=4, cols=4,
                                 subplot_titles=("Johor", "Kedah" ,"Kelantan", "Melaka", 
                                                 "Negeri Sembilan", "Pahang", "Perak", "Perlis", 
@@ -475,7 +477,7 @@ def app():
         r_naught_df = r_naught_df.replace(np.nan, 0)
         r_naught_df['date'] = pd.to_datetime(r_naught_df['date'], format = '%Y-%m-%d')
         #r_naught_df.set_index('date', inplace=True)
-
+        st.markdown('We used an extra dataset which is the R-Naught Index value in our project. There were some r naught indexes not published by MOH. We have filled in the null values with r naught index value of the day before. There were also some string values in the dataset, such as “3 cases” in a single day. For those data, we decided to replace it with zero since the number of cases is so small that we cannot calculate for the R-naught index.')
         fig5a = go.Figure()
         fig5a.add_trace(go.Scatter(x=r_naught_df['date'], y=r_naught_df['Selangor'],
                                     mode='lines',
@@ -531,7 +533,7 @@ def app():
 
         fig5a.show()
         st.plotly_chart(fig5a, use_container_width=True)
-        st.markdown('From the chart, we can find that the RNaught Value of two states fluctuates wildly. They are Perlis and W.P Labuan. For Perlis, we suspect the high RNaught Value is because of the high density of population as the area of the state is the smallest in Malaysia. For Labuan, we guess the high registration rate helps prevent the spread of Covid-19 as Labuan is one of the states with the highest vaccination rate in the early covid period.')
+        st.markdown('From the chart, we can find that the RNaught Value of two states fluctuates wildly. They are Perlis and Labuan. For Perlis, we suspect the high RNaught Value is because of the high density of population as the area of the state is the smallest in Malaysia. For Labuan, we guess the high registration rate helps prevent the spread of Covid-19 as Labuan is one of the states with the highest vaccination rate in the early covid period.')
         #Create figure object
         # import urllib.request, json 
         # with urllib.request.urlopen("https://gist.githubusercontent.com/heiswayi/81a169ab39dcf749c31a/raw/b2b3685f5205aee7c35f0b543201907660fac55e/malaysia.geojson") as url:

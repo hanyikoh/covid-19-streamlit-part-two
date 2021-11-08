@@ -80,7 +80,7 @@ def app():
     kmeans = KMeans(n_clusters=2, init='random')
     label = kmeans.fit_predict(vaccines_type_df)
     u_labels = np.unique(label)
-    plt.figure(figsize=(15,10))
+    plt.figure(figsize=(10,8))
     for i in u_labels:
         plt.scatter(vaccines_type_df.iloc[label == i , 0] , vaccines_type_df.iloc[label == i , 1] , label = i)
     plt.title('Daily Total Vaccine Doses in Malaysia')
