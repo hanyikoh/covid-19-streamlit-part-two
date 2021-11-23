@@ -50,7 +50,7 @@ st.sidebar.markdown('[COVID-19 Immunisation Task Force (CITF) Malaysia](https://
 st.sidebar.markdown('__R-Naught Value in Malaysia__')
 st.sidebar.markdown('[COVID-19 Malaysia](https://covid-19.moh.gov.my/kajian-dan-penyelidikan/nilai-r-malaysia)')
 st.sidebar.markdown('__Google Trends in Malaysia__')
-st.sidebar.markdown('[Google Trends](https://github.com/MoH-Malaysia/covid19-public)')
+st.sidebar.markdown('[Google Trends](https://trends.google.com/trends/?geo=MY)')
 
 st.sidebar.markdown("""<style>.css-1aumxhk {padding: 10em;}</style>""", unsafe_allow_html=True)
 st.sidebar.markdown('''<small>TDS 3301 Data Mining | Group Project </small>''', unsafe_allow_html=True)
