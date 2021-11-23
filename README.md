@@ -9,6 +9,7 @@ This is a advanced project based on our previous work for assignment, [Covid-19 
 * Open data on Malaysia's National Covid-19 Immunisation Programme's github repository, [COVID-19 Immunisation Task Force (CITF) Malaysia](https://github.com/CITF-Malaysia/citf-public)
 * R-Naught Value in Malaysia, [COVID-19 Malaysia](https://covid-19.moh.gov.my/kajian-dan-penyelidikan/nilai-r-malaysia)
 * Google Trends in Malaysia, [Google Trends](https://trends.google.com/trends/?geo=MY)
+
 Time frame is set from 01/07/2021 until 30/09/2021 for official data and daily R-Naught value data from MOH and CITF. This is because the tests_state.csv dataset provided by MOH is only available from the date, 1st of July 2021. Besides, using more recent data is more helpful in predicting future new Covid-19 cases in Malaysia since the data from 2020 to 2021 is having big differences within short time period.
 Time frame is set from 19/10/2020 until 19/10/2021 for Google Trends data, where the search trend data of certain keywords were collected.
 
