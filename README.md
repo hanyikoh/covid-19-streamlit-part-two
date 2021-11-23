@@ -19,7 +19,7 @@ Time frame is set from 19/10/2020 until 19/10/2021 for Google Trends data, where
 </p>
 
 <p align="center">
-  <img width="1024" src="https://github.com/hanyikoh/Covid-19-Analysis-Streamlit/blob/main/screenshots/screenshot2.PNG">
+  <img width="1024" src="https://github.com/hanyikoh/covid-19-streamlit-part-two/blob/master/screenshot2.PNG">
 </p>
 
 ### Attribution
